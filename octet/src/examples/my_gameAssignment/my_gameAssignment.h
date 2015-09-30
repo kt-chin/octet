@@ -323,7 +323,7 @@ namespace octet {
 							goto next_missile;
 						}
 					}
-					if (missile.collides_with(sprites[first_border_sprite + 1])) {
+					if (missile.collides_with(sprites[first_border_sprite]) || missile.collides_with(sprites[first_border_sprite + 1]) || missile.collides_with(sprites[first_border_sprite + 2]) || missile.collides_with(sprites[first_border_sprite + 3])) {
 						missile.is_enabled() = false;
 						missile.translate(20, 0);
 					}
