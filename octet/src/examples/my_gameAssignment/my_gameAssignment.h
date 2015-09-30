@@ -229,13 +229,13 @@ namespace octet {
 			const float ship_speed = 0.05f;
 			// left and right arrows
 			if (is_key_down(key_left)) {
-				sprites[ship_sprite].translate(-ship_speed, 0);
+				sprites[ship_sprite].rotateMatrix(5);
 				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2])) {
 					sprites[ship_sprite].translate(+ship_speed, 0);
 				}
 			}
 			else if (is_key_down(key_right)) {
-				sprites[ship_sprite].translate(+ship_speed, 0);
+				sprites[ship_sprite].rotateMatrix(-5);
 				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3])) {
 					sprites[ship_sprite].translate(-ship_speed, 0);
 				}
