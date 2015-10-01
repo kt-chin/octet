@@ -428,7 +428,7 @@ namespace octet {
 
 			font_texture = resource_dict::get_texture_handle(GL_RGBA, "assets/big_0.gif");
 
-			GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/ship.gif");
+			GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/theShip.gif");
 			sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25f);
 
 			GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
@@ -468,8 +468,8 @@ namespace octet {
 			}
 
 			// sounds
-			whoosh = resource_dict::get_sound_handle(AL_FORMAT_MONO16, "assets/invaderers/whoosh.wav");
-			bang = resource_dict::get_sound_handle(AL_FORMAT_MONO16, "assets/invaderers/bang.wav");
+			whoosh = resource_dict::get_sound_handle(AL_FORMAT_MONO16, "assets/invaderers/pop.wav");
+			bang = resource_dict::get_sound_handle(AL_FORMAT_MONO16, "assets/invaderers/bam.wav");
 			cur_source = 0;
 			alGenSources(num_sound_sources, sources);
 
