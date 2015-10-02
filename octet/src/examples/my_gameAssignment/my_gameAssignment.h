@@ -133,7 +133,7 @@ namespace octet {
 
 		enum {
 			num_sound_sources = 8,
-			num_rows = 5,
+			num_rows = 1,
 			num_cols = 10,
 			num_missiles = 2,
 			num_bombs = 2,
@@ -502,12 +502,12 @@ namespace octet {
 
 			move_bombs();
 
-			move_invaders(0, -invader_velocity);
+			move_invaders(invader_velocity, 0);
 
-			sprite &border = sprites[first_border_sprite /*+ (invader_velocity < 0 ? 2 : 3)*/];
+			sprite &border = sprites[first_border_sprite + (invader_velocity < 0 ? 2 : 3)];
 			sprite &invaderer = sprites[first_invaderer_sprite];
 			if (invaders_collide(border)) {
-				//invader_velocity = -invader_velocity;
+				invader_velocity = -invader_velocity;
 				//move_invaders(invader_velocity, -0.1f);
 
 			}
