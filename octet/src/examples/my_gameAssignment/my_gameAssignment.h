@@ -324,7 +324,10 @@ namespace octet {
 							goto next_missile;
 						}
 					}
-					if (missile.collides_with(sprites[first_border_sprite]) || missile.collides_with(sprites[first_border_sprite + 1]) || missile.collides_with(sprites[first_border_sprite + 2]) || missile.collides_with(sprites[first_border_sprite + 3])) {
+					if (missile.collides_with(sprites[first_border_sprite]) || 
+						missile.collides_with(sprites[first_border_sprite + 1]) || 
+						missile.collides_with(sprites[first_border_sprite + 2]) || 
+						missile.collides_with(sprites[first_border_sprite + 3])) {
 						missile.is_enabled() = false;
 						missile.translate(20, 0);
 					}
@@ -450,7 +453,7 @@ namespace octet {
 			sprites[first_border_sprite + 1].init(white, 0, 3, 6, 0.2f);
 			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
 			sprites[first_border_sprite + 3].init(white, 3, 0, 0.2f, 6);
-
+		//	sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
 			// use the missile texture
 			GLuint missile = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/missile.gif");
 			for (int i = 0; i != num_missiles; ++i) {
@@ -499,12 +502,14 @@ namespace octet {
 
 			move_bombs();
 
-			move_invaders(invader_velocity, 0);
+			move_invaders(0, -invader_velocity);
 
-			sprite &border = sprites[first_border_sprite + (invader_velocity < 0 ? 2 : 3)];
+			sprite &border = sprites[first_border_sprite /*+ (invader_velocity < 0 ? 2 : 3)*/];
+			sprite &invaderer = sprites[first_invaderer_sprite];
 			if (invaders_collide(border)) {
-				invader_velocity = -invader_velocity;
-				move_invaders(invader_velocity, -0.1f);
+				//invader_velocity = -invader_velocity;
+				//move_invaders(invader_velocity, -0.1f);
+
 			}
 		}
 
