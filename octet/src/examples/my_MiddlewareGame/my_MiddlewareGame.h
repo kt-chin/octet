@@ -16,7 +16,31 @@ namespace octet {
 	ref<scene_node> player_node;
 
 	ref<camera_instance> the_camera;
+	struct example_geometry_source : mesh_terrain::geometry_source {
+		mesh::vertex vertex(
+			vec3_in bb_min, vec3_in uv_min, vec3_in uv_delta, vec3_in pos
+			) {
+			static const vec3 bumps[] = {
+				vec3(100, 0, 100), vec3(50, 0, 50), vec3(150, 0, 50)
+			};
 
+			float y =
+				std::exp((pos - bumps[0]).squared() / (-100.0f)) * 1.0f +
+				std::exp((pos - bumps[1]).squared() / (-100.0f)) * 2.1f +
+				std::exp((pos - bumps[2]).squared() / (-10000.0f)) * (-20.0f) +
+				(15.0f)
+				;
+
+			float dy_dx = std::cos(pos.x() * 0.01f);
+			float dy_dz = std::cos(pos.z() * 0.03f);
+			vec3 p = bb_min + pos + vec3(0, y, 0);
+			vec3 normal = normalize(vec3(dy_dx, 1, dy_dz));
+			vec3 uv = uv_min + vec3((float)pos.x(), (float)pos.z(), 0) * uv_delta;
+			return mesh::vertex(p, normal, uv);
+		}
+	};
+
+	example_geometry_source source;
 
   public:
     my_MiddlewareGame(int argc, char **argv) : app(argc, argv) {
@@ -51,11 +75,16 @@ namespace octet {
       mat.translate( 3, 6, 0);
       app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 0, 0), 2, 4)), blue, true);
 
+	  mat.loadIdentity();
+	  mat.translate(0, -0.5f, 0);
 
       // ground
-      mat.loadIdentity();
-      mat.translate(0, -1, 0);
-      app_scene->add_shape(mat, new mesh_box(vec3(200, 1, 200)), green, false);
+	  app_scene->add_shape(
+		  mat,
+		  new mesh_terrain(vec3(100.0f, 0.5f, 100.0f), ivec3(100, 1, 100), source),
+		  new material(new image("assets/grass.jpg")),
+		  false, 0
+		  );
 
 	  float player_height = 1.83f;
 	  float player_radius = 0.25f;
@@ -86,8 +115,8 @@ namespace octet {
 
 	  fps_helper.update(player_node, camera_node);
 
-      // update matrices. assume 30 fps.
-      app_scene->update(1.0f/30);
+      // update matrices. assume 60 fps.
+      app_scene->update(1.0f/60);
 
       // draw the scene
       app_scene->render((float)vx / vy);
