@@ -137,7 +137,7 @@ namespace octet {
 			num_cols = 10,
 			num_missiles = 2,
 			num_bombs = 2,
-			num_borders = 7,
+			num_borders = 4,
 			num_invaderers = num_rows * num_cols,
 
 			// sprite definitions
@@ -453,13 +453,7 @@ namespace octet {
 			sprites[first_border_sprite + 1].init(white, 0, 3, 6, 0.2f);
 			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
 			sprites[first_border_sprite + 3].init(white, 3, 0, 0.2f, 6);
-
-			//Maze border 1
-			sprites[first_border_sprite + 4].init(white, 1, -2.1f, 5.5f, 0.2f);
-
-
-			sprites[first_border_sprite + 5].init(white, -3, 1.5f, 3, 0.2f);
-			sprites[first_border_sprite + 6].init(white, 3, 2, 5.5f, 0.2f);
+		//	sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
 			// use the missile texture
 			GLuint missile = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/missile.gif");
 			for (int i = 0; i != num_missiles; ++i) {
