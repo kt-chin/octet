@@ -468,11 +468,7 @@ namespace octet {
 
 
 			//Maze border 1
-			sprites[first_border_sprite + 4].init(white, 1, -2.1f, 5.5f, 0.2f);
 
-
-			sprites[first_border_sprite + 5].init(white, -3, 1.5f, 3, 0.2f);
-			sprites[first_border_sprite + 6].init(white, 3, 2, 5.5f, 0.2f);
 
 			// use the missile texture
 			GLuint missile = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/missile.gif");
