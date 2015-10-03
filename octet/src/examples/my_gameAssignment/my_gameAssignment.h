@@ -453,6 +453,7 @@ namespace octet {
 
 			// set the border to white for clarity
 			GLuint white = resource_dict::get_texture_handle(GL_RGB, "#ffffff");
+			GLuint red = resource_dict::get_texture_handle(GL_RGB, "#ff0000");
 			sprites[first_border_sprite + 0].init(white, 0, -3, 6, 0.2f);
 			sprites[first_border_sprite + 1].init(white, 0, 3, 6, 0.2f);
 			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
@@ -462,12 +463,10 @@ namespace octet {
 
 
 			//Maze border 1
-			sprites[first_border_sprite + 4].init(white, 1, -2.1f, 5.5f, 0.2f);
+			sprites[first_border_sprite + 4].init(red, 1, -2.1f, 5.5f, 0.2f);
 			sprites[first_border_sprite + 5].init(white, -1, -1, 5.5f, 0.2f);
 			sprites[first_border_sprite + 6].init(white, 1, 1, 5.5f, 0.2f);
 
-
-			//Maze border 1
 
 
 			// use the missile texture
