@@ -235,6 +235,7 @@ namespace octet {
 				sprites[ship_sprite].rotateMatrix(-5);
 			}
 
+<<<<<<< HEAD
 			if (is_key_down(key_up)) {
 				sprites[ship_sprite].translate(0, +ship_speed);
 				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
@@ -250,10 +251,34 @@ namespace octet {
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3])) {
+=======
+			for (int i = 0; i != num_borders; ++i) {
+				sprite &border = sprites[first_border_sprite + i];
+				if (is_key_down(key_up)) {
+>>>>>>> origin/master
 					sprites[ship_sprite].translate(0, +ship_speed);
+					if (sprites[ship_sprite].collides_with(border)) /*||
+						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
+						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
+						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]))*/
+					{
+						sprites[ship_sprite].translate(0, -ship_speed);
+					}
 				}
+
+				else if (is_key_down(key_down)) {
+					sprites[ship_sprite].translate(0, -ship_speed);
+					if (sprites[ship_sprite].collides_with(border)) /*||
+						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
+						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
+						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]))*/ {
+							sprites[ship_sprite].translate(0, +ship_speed);
+					}
+				}
+
 			}
 		}
+		
 
 		// fire button (space)
 		void fire_missiles() {
@@ -266,6 +291,7 @@ namespace octet {
 					if (!sprites[first_missile_sprite + i].is_enabled()) {
 						sprites[first_missile_sprite + i].set_relative(sprites[ship_sprite], 0, 0.5f);
 						sprites[first_missile_sprite + i].is_enabled() = true;
+					
 						missiles_disabled = 5;
 						ALuint source = get_sound_source();
 						alSourcei(source, AL_BUFFER, whoosh);
@@ -453,7 +479,16 @@ namespace octet {
 			sprites[first_border_sprite + 1].init(white, 0, 3, 6, 0.2f);
 			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
 			sprites[first_border_sprite + 3].init(white, 3, 0, 0.2f, 6);
+<<<<<<< HEAD
 		//	sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
+=======
+
+			//Maze border 1
+			sprites[first_border_sprite + 4].init(white, 1, -2.1f, 5.5f, 0.2f);
+			sprites[first_border_sprite + 5].init(white, -1, -1, 5.5f, 0.2f);
+			sprites[first_border_sprite + 6].init(white, 1, 1, 5.5f, 0.2f);
+
+>>>>>>> origin/master
 			// use the missile texture
 			GLuint missile = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/missile.gif");
 			for (int i = 0; i != num_missiles; ++i) {
