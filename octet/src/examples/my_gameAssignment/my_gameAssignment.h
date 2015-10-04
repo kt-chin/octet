@@ -139,6 +139,7 @@ namespace octet {
 			num_bombs = 2,
 			num_borders = 7,
 			num_invaderers = num_rows * num_cols,
+			
 
 			// sprite definitions
 			ship_sprite = 0,
@@ -240,7 +241,10 @@ namespace octet {
 				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3])) {
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) || 
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) || 
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
 					sprites[ship_sprite].translate(0, -ship_speed);
 				}
 			}
@@ -249,7 +253,10 @@ namespace octet {
 				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3])) {
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
 					sprites[ship_sprite].translate(0, +ship_speed);
 
 
@@ -436,7 +443,8 @@ namespace octet {
 			font_texture = resource_dict::get_texture_handle(GL_RGBA, "assets/big_0.gif");
 
 			GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/theShip.gif");
-			sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25f);
+			sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25);
+			sprites[ship_sprite].rotateMatrix(90);
 
 			GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
 			sprites[game_over_sprite].init(GameOver, 20, 0, 3, 1.5f);
