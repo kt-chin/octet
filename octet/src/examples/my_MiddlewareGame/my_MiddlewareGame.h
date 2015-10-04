@@ -26,7 +26,7 @@ namespace octet {
 
 			float y =
 				std::exp((pos - bumps[0]).squared() / (-100.0f)) * 1.0f +
-				std::exp((pos - bumps[1]).squared() / (-100.0f)) * 2.1f +
+				std::exp((pos - bumps[1]).squared() / (-100.0f)) * 2.0f +
 				std::exp((pos - bumps[2]).squared() / (-10000.0f)) * (-20.0f) +
 				(15.0f)
 				;
@@ -116,7 +116,7 @@ namespace octet {
 	  fps_helper.update(player_node, camera_node);
 
       // update matrices. assume 60 fps.
-      app_scene->update(1.0f/60);
+      app_scene->update(1.0f/15);
 
       // draw the scene
       app_scene->render((float)vx / vy);
