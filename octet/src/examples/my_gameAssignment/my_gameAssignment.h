@@ -230,10 +230,10 @@ namespace octet {
 			const float ship_speed = 0.05f;
 			// left and right arrows
 			if (is_key_down(key_left)) {
-				sprites[ship_sprite].rotateMatrix(5);
+				sprites[ship_sprite].rotateMatrix(8);
 			}
 			else if (is_key_down(key_right)) {
-				sprites[ship_sprite].rotateMatrix(-5);
+				sprites[ship_sprite].rotateMatrix(-8);
 			}
 
 			if (is_key_down(key_up)) {
@@ -265,7 +265,7 @@ namespace octet {
 		}
 		
 
-		// fire button (space)
+	/*	// fire button (space)
 		void fire_missiles() {
 			if (missiles_disabled) {
 				--missiles_disabled;
@@ -285,7 +285,7 @@ namespace octet {
 					}
 				}
 			}
-		}
+		}*/
 
 		// pick and invader and fire a bomb
 		/*void fire_bombs() {
@@ -517,7 +517,7 @@ namespace octet {
 
 			move_ship();
 
-			fire_missiles();
+			//fire_missiles();
 
 			//fire_bombs();
 
