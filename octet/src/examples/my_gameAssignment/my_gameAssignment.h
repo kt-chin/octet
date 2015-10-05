@@ -288,7 +288,7 @@ namespace octet {
 		}*/
 
 		// pick and invader and fire a bomb
-		/*void fire_bombs() {
+		void fire_bombs() {
 			if (bombs_disabled) {
 				--bombs_disabled;
 			}
@@ -314,10 +314,10 @@ namespace octet {
 					}
 				}
 			}
-		}*/
+		}
 
 		// animate the missiles
-		void move_missiles() {
+		/*void move_missiles() {
 			const float missile_speed = 0.3f;
 			for (int i = 0; i != num_missiles; ++i) {
 				sprite &missile = sprites[first_missile_sprite + i];
@@ -345,10 +345,10 @@ namespace octet {
 				}
 			next_missile:;
 			}
-		}
+		}*/
 
 		// animate the bombs
-	/*	void move_bombs() {
+		void move_bombs() {
 			const float bomb_speed = 0.2f;
 			for (int i = 0; i != num_bombs; ++i) {
 				sprite &bomb = sprites[first_bomb_sprite + i];
@@ -368,7 +368,7 @@ namespace octet {
 				}
 			next_bomb:;
 			}
-		}*/
+		}
 
 		// move the array of enemies
 		void move_invaders(float dx, float dy) {
@@ -519,11 +519,11 @@ namespace octet {
 
 			//fire_missiles();
 
-			//fire_bombs();
+			fire_bombs();
 
-			move_missiles();
+			//move_missiles();
 
-			//move_bombs();
+			move_bombs();
 
 			move_invaders(invader_velocity, 0);
 
