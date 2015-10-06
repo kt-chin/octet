@@ -14,6 +14,7 @@ namespace octet {
 
 		// true if this sprite is enabled.
 		bool enabled;
+
 	public:
 		sprite() {
 			texture = 0;
@@ -236,6 +237,12 @@ namespace octet {
 				sprites[ship_sprite].rotateMatrix(-8);
 			}
 
+			bool collisionBool = true;
+
+			/*for (int i = 0, i < num_borders, i++) {
+
+				collisionBool = collisionBool || sprites[ship_sprite].collides_with(sprites[first_border_sprite + i])
+			}*/
 			if (is_key_down(key_up)) {
 				sprites[ship_sprite].translate(0, +ship_speed);
 				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
