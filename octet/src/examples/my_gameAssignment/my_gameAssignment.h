@@ -450,7 +450,7 @@ namespace octet {
 			font_texture = resource_dict::get_texture_handle(GL_RGBA, "assets/big_0.gif");
 
 			GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/theShip.gif");
-			sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25);
+			sprites[ship_sprite].init(ship, 2.3f, -2.70f, 0.25f, 0.25);
 			sprites[ship_sprite].rotateMatrix(90);
 
 			GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
@@ -539,6 +539,7 @@ namespace octet {
 			if (invaderer.collides_with(sprites[first_border_sprite]))
 			{
 				std::cout << "hit the border" << std::endl;
+				invaderer.translate(0, 20);
 			}
 			//if (invaders_collide(border)) {
 				//invader_velocity = -invader_velocity;
