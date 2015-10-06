@@ -140,7 +140,7 @@ namespace octet {
 			num_bombs = 2,
 			num_borders = 7,
 			num_invaderers = num_rows * num_cols,
-			
+
 
 			// sprite definitions
 			ship_sprite = 0,
@@ -249,8 +249,8 @@ namespace octet {
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) || 
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) || 
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
 					sprites[ship_sprite].translate(0, -ship_speed);
 				}
@@ -270,31 +270,31 @@ namespace octet {
 				}
 			}
 		}
-		
 
-	/*	// fire button (space)
-		void fire_missiles() {
-			if (missiles_disabled) {
-				--missiles_disabled;
-			}
-			else if (is_key_going_down(' ')) {
-				// find a missile
-				for (int i = 0; i != num_missiles; ++i) {
-					if (!sprites[first_missile_sprite + i].is_enabled()) {
-						sprites[first_missile_sprite + i].set_relative(sprites[ship_sprite], 0, 0.5f);
-						sprites[first_missile_sprite + i].is_enabled() = true;
-					
-						missiles_disabled = 5;
-						ALuint source = get_sound_source();
-						alSourcei(source, AL_BUFFER, whoosh);
-						alSourcePlay(source);
-						break;
+
+		/*	// fire button (space)
+			void fire_missiles() {
+				if (missiles_disabled) {
+					--missiles_disabled;
+				}
+				else if (is_key_going_down(' ')) {
+					// find a missile
+					for (int i = 0; i != num_missiles; ++i) {
+						if (!sprites[first_missile_sprite + i].is_enabled()) {
+							sprites[first_missile_sprite + i].set_relative(sprites[ship_sprite], 0, 0.5f);
+							sprites[first_missile_sprite + i].is_enabled() = true;
+
+							missiles_disabled = 5;
+							ALuint source = get_sound_source();
+							alSourcei(source, AL_BUFFER, whoosh);
+							alSourcePlay(source);
+							break;
+						}
 					}
 				}
-			}
-		}*/
+			}*/
 
-		// pick and invader and fire a bomb
+			// pick and invader and fire a bomb
 		void fire_bombs() {
 			if (bombs_disabled) {
 				--bombs_disabled;
@@ -342,9 +342,9 @@ namespace octet {
 							goto next_missile;
 						}
 					}
-					if (missile.collides_with(sprites[first_border_sprite]) || 
-						missile.collides_with(sprites[first_border_sprite + 1]) || 
-						missile.collides_with(sprites[first_border_sprite + 2]) || 
+					if (missile.collides_with(sprites[first_border_sprite]) ||
+						missile.collides_with(sprites[first_border_sprite + 1]) ||
+						missile.collides_with(sprites[first_border_sprite + 2]) ||
 						missile.collides_with(sprites[first_border_sprite + 3])) {
 						missile.is_enabled() = false;
 						missile.translate(20, 0);
@@ -474,10 +474,10 @@ namespace octet {
 			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
 			sprites[first_border_sprite + 3].init(white, 3, 0, 0.2f, 6);
 
-		//	sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
+			//	sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
 
 
-			//Maze border 1
+				//Maze border 1
 			sprites[first_border_sprite + 4].init(red, 1, -2.1f, 5.5f, 0.2f);
 			sprites[first_border_sprite + 5].init(white, -1, -1, 5.5f, 0.2f);
 			sprites[first_border_sprite + 6].init(white, 1, 1, 5.5f, 0.2f);
@@ -532,16 +532,19 @@ namespace octet {
 
 			move_bombs();
 
-			move_invaders(invader_velocity, 0);
+			move_invaders(0, -invader_velocity);
 
 			sprite &border = sprites[first_border_sprite + (invader_velocity < 0 ? 2 : 3)];
 			sprite &invaderer = sprites[first_invaderer_sprite];
-			if (invaders_collide(border)) {
-				invader_velocity = -invader_velocity;
-				//move_invaders(invader_velocity, -0.1f);
-
+			if (invaderer.collides_with(sprites[first_border_sprite]))
+			{
+				std::cout << "hit the border" << std::endl;
 			}
-		}
+			//if (invaders_collide(border)) {
+				//invader_velocity = -invader_velocity;
+				//move_invaders(invader_velocity, -0.1f);
+		//}
+	}
 
 		// this is called to draw the world
 		void draw_world(int x, int y, int w, int h) {
