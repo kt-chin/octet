@@ -198,7 +198,7 @@ namespace octet {
 		ALuint get_sound_source() { return sources[cur_source++ % num_sound_sources]; }
 
 		// called when we hit an enemy
-		void on_hit_invaderer() {
+		/*void on_hit_invaderer() {
 			ALuint source = get_sound_source();
 			alSourcei(source, AL_BUFFER, bang);
 			alSourcePlay(source);
@@ -212,7 +212,7 @@ namespace octet {
 				game_over = true;
 				sprites[game_over_sprite].translate(-20, 0);
 			}
-		}
+		}*/
 
 		// called when we are hit
 		void on_hit_ship() {
@@ -438,11 +438,11 @@ namespace octet {
 		my_gameAssignment(int argc, char **argv) : app(argc, argv), font(512, 256, "assets/big.fnt") {
 		}
 
+		
 		// this is called once OpenGL is initialized
 		void app_init() {
 			// set up the shader
 			texture_shader_.init();
-
 			// set up the matrices with a camera 5 units from the origin
 			cameraToWorld.loadIdentity();
 			cameraToWorld.translate(0, 0, 3);
@@ -450,7 +450,7 @@ namespace octet {
 			font_texture = resource_dict::get_texture_handle(GL_RGBA, "assets/big_0.gif");
 
 			GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/theShip.gif");
-			sprites[ship_sprite].init(ship, 2.3f, -2.70f, 0.25f, 0.25);
+			sprites[ship_sprite].init(ship, 2.7f, -2.70f, 0.25f, 0.25);
 			sprites[ship_sprite].rotateMatrix(90);
 
 			GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
@@ -539,7 +539,15 @@ namespace octet {
 			if (invaderer.collides_with(sprites[first_border_sprite]))
 			{
 				std::cout << "hit the border" << std::endl;
-				invaderer.translate(0, 20);
+				for (int j = 0; j != num_rows; ++j) {
+					for (int i = 0; i != num_cols; ++i) {
+						//assert(first_invaderer_sprite + i + j*num_cols <= last_invaderer_sprite);
+						sprites[first_invaderer_sprite + i + j*num_cols].init(
+							invaderer, ((float)i - num_cols * 0.5f) * 0.5f, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
+							);
+					}
+				}
+			//	sprites[first_invaderer_sprite]invaderer.translate(0, 20);
 			}
 			//if (invaders_collide(border)) {
 				//invader_velocity = -invader_velocity;
