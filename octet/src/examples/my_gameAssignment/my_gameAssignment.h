@@ -146,6 +146,8 @@ namespace octet {
 			ship_sprite = 0,
 			game_over_sprite,
 
+			portal_sprite,
+
 			first_invaderer_sprite,
 			last_invaderer_sprite = first_invaderer_sprite + num_invaderers - 1,
 
@@ -456,6 +458,9 @@ namespace octet {
 			GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
 			sprites[game_over_sprite].init(GameOver, 20, 0, 3, 1.5f);
 
+			GLuint WinState = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/SimpleCrate.gif");
+			sprites[portal_sprite].init(WinState, -1, 2.4f, 0.7f, 0.7f);
+
 			GLuint invaderer = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/invaderer.gif");
 			for (int j = 0; j != num_rows; ++j) {
 				for (int i = 0; i != num_cols; ++i) {
@@ -534,8 +539,18 @@ namespace octet {
 
 			move_invaders(0, -invader_velocity);
 
+			
+			sprite &ship = sprites[ship_sprite];
+			sprite &portal = sprites[portal_sprite];
 			sprite &border = sprites[first_border_sprite + (invader_velocity < 0 ? 2 : 3)];
 			sprite &invaderer = sprites[first_invaderer_sprite];
+
+			if (ship.collides_with(portal))
+			{
+				game_over = true;
+				sprites[game_over_sprite].translate(-20, 0);
+			}
+
 			if (invaderer.collides_with(sprites[first_border_sprite]))
 			{
 				std::cout << "hit the border" << std::endl;
