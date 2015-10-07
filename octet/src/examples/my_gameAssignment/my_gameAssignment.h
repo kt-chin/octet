@@ -438,7 +438,7 @@ namespace octet {
 		my_gameAssignment(int argc, char **argv) : app(argc, argv), font(512, 256, "assets/big.fnt") {
 		}
 
-		
+
 		// this is called once OpenGL is initialized
 		void app_init() {
 			// set up the shader
@@ -539,21 +539,18 @@ namespace octet {
 			if (invaderer.collides_with(sprites[first_border_sprite]))
 			{
 				std::cout << "hit the border" << std::endl;
-				for (int j = 0; j != num_rows; ++j) {
-					for (int i = 0; i != num_cols; ++i) {
-						//assert(first_invaderer_sprite + i + j*num_cols <= last_invaderer_sprite);
-						sprites[first_invaderer_sprite + i + j*num_cols].init(
-							invaderer, ((float)i - num_cols * 0.5f) * 0.5f, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
-							);
-					}
-				}
-			//	sprites[first_invaderer_sprite]invaderer.translate(0, 20);
+				//invaderer
+
 			}
-			//if (invaders_collide(border)) {
-				//invader_velocity = -invader_velocity;
-				//move_invaders(invader_velocity, -0.1f);
-		//}
-	}
+		
+	
+		//	sprites[first_invaderer_sprite]invaderer.translate(0, 20);
+	
+	//if (invaders_collide(border)) {
+		//invader_velocity = -invader_velocity;
+		//move_invaders(invader_velocity, -0.1f);
+//}
+}
 
 		// this is called to draw the world
 		void draw_world(int x, int y, int w, int h) {
