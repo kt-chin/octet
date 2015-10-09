@@ -10,13 +10,16 @@
 #define OCTET_BULLET 1
 
 #include "../../octet.h"
-
+#include <iostream>
+#include <fstream>
+#include <vector>
 #include "my_gameAssignment.h"
 
 /// Create a box with octet
 int main(int argc, char **argv) {
   // set up the platform.
   octet::app::init_all(argc, argv);
+
 
   // our application.
   octet::my_gameAssignment app(argc, argv);

@@ -1,7 +1,7 @@
 namespace octet {
 	class sprite {
 		// where is our sprite (overkill for a 2D game!)
-		mat4t modelToWorld;
+		
 
 		// half the width of the sprite
 		float halfWidth;
@@ -16,11 +16,13 @@ namespace octet {
 		bool enabled;
 
 	public:
+		mat4t modelToWorld;
+
 		sprite() {
 			texture = 0;
 			enabled = true;
-
 		}
+
 
 		void rotateMatrix(float angle)
 		{
@@ -135,7 +137,7 @@ namespace octet {
 		enum {
 			num_sound_sources = 8,
 			num_rows = 1,
-			num_cols = 10,
+			num_cols = 11,
 			num_missiles = 2,
 			num_bombs = 2,
 			num_borders = 7,
@@ -274,29 +276,7 @@ namespace octet {
 		}
 
 
-		/*	// fire button (space)
-			void fire_missiles() {
-				if (missiles_disabled) {
-					--missiles_disabled;
-				}
-				else if (is_key_going_down(' ')) {
-					// find a missile
-					for (int i = 0; i != num_missiles; ++i) {
-						if (!sprites[first_missile_sprite + i].is_enabled()) {
-							sprites[first_missile_sprite + i].set_relative(sprites[ship_sprite], 0, 0.5f);
-							sprites[first_missile_sprite + i].is_enabled() = true;
-
-							missiles_disabled = 5;
-							ALuint source = get_sound_source();
-							alSourcei(source, AL_BUFFER, whoosh);
-							alSourcePlay(source);
-							break;
-						}
-					}
-				}
-			}*/
-
-			// pick and invader and fire a bomb
+		// pick and invader and fire a bomb
 		void fire_bombs() {
 			if (bombs_disabled) {
 				--bombs_disabled;
@@ -325,36 +305,6 @@ namespace octet {
 			}
 		}
 
-		// animate the missiles
-		/*void move_missiles() {
-			const float missile_speed = 0.3f;
-			for (int i = 0; i != num_missiles; ++i) {
-				sprite &missile = sprites[first_missile_sprite + i];
-				if (missile.is_enabled()) {
-					missile.translate(0, missile_speed);
-					for (int j = 0; j != num_invaderers; ++j) {
-						sprite &invaderer = sprites[first_invaderer_sprite + j];
-						if (invaderer.is_enabled() && missile.collides_with(invaderer)) {
-							invaderer.is_enabled() = false;
-							invaderer.translate(20, 0);
-							missile.is_enabled() = false;
-							missile.translate(20, 0);
-							on_hit_invaderer();
-
-							goto next_missile;
-						}
-					}
-					if (missile.collides_with(sprites[first_border_sprite]) ||
-						missile.collides_with(sprites[first_border_sprite + 1]) ||
-						missile.collides_with(sprites[first_border_sprite + 2]) ||
-						missile.collides_with(sprites[first_border_sprite + 3])) {
-						missile.is_enabled() = false;
-						missile.translate(20, 0);
-					}
-				}
-			next_missile:;
-			}
-		}*/
 
 		// animate the bombs
 		void move_bombs() {
@@ -468,8 +418,10 @@ namespace octet {
 					sprites[first_invaderer_sprite + i + j*num_cols].init(
 						invaderer, ((float)i - num_cols * 0.5f) * 0.5f, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
 						);
+					sprites[first_invaderer_sprite + i + j*num_cols].translate(0.2f, 0);
 				}
 			}
+			
 
 			// set the border to white for clarity
 			GLuint white = resource_dict::get_texture_handle(GL_RGB, "#ffffff");
@@ -527,6 +479,39 @@ namespace octet {
 				return;
 			}
 
+			//read CSV file
+			std::vector<std::string> names;
+			std::vector<int> score;
+			std::ifstream is("../../../assets/invaderers/Maze.csv");
+
+			//if (is.bad()) return 1;
+
+			// store the line here
+			char buffer[2048];
+
+			// loop over lines
+			while (!is.eof()) {
+				is.getline(buffer, sizeof(buffer));
+
+				// loop over columns
+				char *b = buffer;
+				for (int col = 0; ; ++col) {
+					char *e = b;
+					while (*e != 0 && *e != ',') ++e;
+
+					// now b -> e contains the chars in a column
+					if (col == 0) {
+						names.emplace_back(b, e);
+					}
+					else if (col == 1) {
+						score.push_back(std::atoi(b));
+					}
+
+					if (*e != ',') break;
+					b = e + 1;
+				}
+			}
+
 			move_ship();
 
 			//fire_missiles();
@@ -539,7 +524,7 @@ namespace octet {
 
 			move_invaders(0, -invader_velocity);
 
-			
+
 			sprite &ship = sprites[ship_sprite];
 			sprite &portal = sprites[portal_sprite];
 			sprite &border = sprites[first_border_sprite + (invader_velocity < 0 ? 2 : 3)];
@@ -553,10 +538,19 @@ namespace octet {
 
 			if (invaderer.collides_with(sprites[first_border_sprite]))
 			{
-				std::cout << "hit the border" << std::endl;
-				//invaderer
-
+				for (int j = 0; j != num_rows; ++j) {
+					for (int i = 0; i != num_cols; ++i) {
+						sprite &invaderer = sprites[first_invaderer_sprite + i];
+						std::cout << "hit the border" << std::endl;
+						
+						//invaderer.modelToWorld.loadIdentity();
+						invaderer.translate(0,5.7f);
+							
+					}
+				}
 			}
+		
+	
 		
 	
 		//	sprites[first_invaderer_sprite]invaderer.translate(0, 20);
