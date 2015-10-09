@@ -137,7 +137,7 @@ namespace octet {
 		enum {
 			num_sound_sources = 8,
 			num_rows = 1,
-			num_cols = 11,
+			num_cols = 9,
 			num_missiles = 2,
 			num_bombs = 2,
 			num_borders = 7,
@@ -416,7 +416,7 @@ namespace octet {
 				for (int i = 0; i != num_cols; ++i) {
 					assert(first_invaderer_sprite + i + j*num_cols <= last_invaderer_sprite);
 					sprites[first_invaderer_sprite + i + j*num_cols].init(
-						invaderer, ((float)i - num_cols * 0.5f) * 0.5f, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
+						invaderer, ((float)i - num_cols * 0.5f) * 0.67f, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
 						);
 					sprites[first_invaderer_sprite + i + j*num_cols].translate(0.2f, 0);
 				}
@@ -478,6 +478,12 @@ namespace octet {
 			if (game_over) {
 				return;
 			}
+
+			int timer_count = 0;
+			++timer_count;
+
+
+			printf("%d \n", timer_count);
 
 			//read CSV file
 			std::vector<std::string> names;
