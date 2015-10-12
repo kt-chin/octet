@@ -153,8 +153,7 @@ namespace octet {
 
 			portal_sprite,
 
-			/*first_maze_sprite,
-			last_maze_sprite = first_maze */
+			maze_sprite,
 
 			first_invaderer_sprite,
 			last_invaderer_sprite = first_invaderer_sprite + num_invaderers - 1,
@@ -434,22 +433,21 @@ void fire_bombs() {
 
 			// set the border to white for clarity
 			GLuint white = resource_dict::get_texture_handle(GL_RGB, "#ffffff");
-			GLuint red = resource_dict::get_texture_handle(GL_RGB, "#ff0000");
-			sprites[first_border_sprite + 0].init(red, 0, -3, 6, 0.2f);
+			//GLuint red = resource_dict::get_texture_handle(GL_RGB, "#ff0000");
+			GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
+			sprites[first_border_sprite + 0].init(white, 0, -3, 6, 0.2f);
 			sprites[first_border_sprite + 1].init(white, 0, 3, 6, 0.2f);
 			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
 			sprites[first_border_sprite + 3].init(white, 3, 0, 0.2f, 6);
-
-			//	sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
+			sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
 
 
 				//Maze border 1
-			sprites[first_border_sprite + 4].init(white, 1, -2.1f, 5.5f, 0.2f);
-			sprites[first_border_sprite + 5].init(white, -1, -1, 5.5f, 0.2f);
-			sprites[first_border_sprite + 6].init(white, 1, 1, 5.5f, 0.2f);
+			sprites[first_border_sprite + 4].init(maze, 1, -2.1f, 5.5f, 0.2f);
+			sprites[first_border_sprite + 5].init(maze, -1, -1, 5.5f, 0.2f);
+			sprites[first_border_sprite + 6].init(maze, 1, 1, 5.5f, 0.2f);
 
-
-
+			
 			// use the missile texture
 			//GLuint missile = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/missile.gif");
 			//for (int i = 0; i != num_missiles; ++i) {
@@ -516,6 +514,11 @@ void fire_bombs() {
 				for (int col = 0; ; ++col) {
 					char *e = csv_buffer;
 					while (*e != 0 && *e != ',') ++e;
+					/*if (*e= 1)
+					{
+						GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
+						sprites[maze_sprite].init(maze, , this.y, 0.2f, 0.2f);
+					}*/
 
 					// now b -> e contains the chars in a column
 					if (col == 0) {
@@ -524,6 +527,7 @@ void fire_bombs() {
 					else if (col == 1) {
 						score.push_back(std::atoi(csv_buffer));
 					}
+
 
 					if (*e != ',') break;
 					csv_buffer = e + 1;
