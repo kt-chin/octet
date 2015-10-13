@@ -224,93 +224,112 @@ namespace octet {
 		}*/
 
 		// called when we are hit
-void on_hit_ship() {
-	ALuint source = get_sound_source();
-	alSourcei(source, AL_BUFFER, bang);
-	alSourcePlay(source);
+		void on_hit_ship() {
+			ALuint source = get_sound_source();
+			alSourcei(source, AL_BUFFER, bang);
+			alSourcePlay(source);
 
-	if (--num_lives == 0) {
-		game_over = true;
-		sprites[game_over_sprite].translate(-20, 0);
-	}
-}
-
-// use the keyboard to move the ship
-void move_ship() {
-	const float ship_speed = 0.05f;
-	// left and right arrows
-	if (is_key_down(key_left)) {
-		sprites[ship_sprite].rotateMatrix(8);
-	}
-	else if (is_key_down(key_right)) {
-		sprites[ship_sprite].rotateMatrix(-8);
-	}
-
-	bool collisionBool = true;
-
-	/*for (int i = 0, i < num_borders, i++) {
-
-		collisionBool = collisionBool || sprites[ship_sprite].collides_with(sprites[first_border_sprite + i])
-	}*/
-	if (is_key_down(key_up)) {
-		sprites[ship_sprite].translate(0, +ship_speed);
-		if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
-			sprites[ship_sprite].translate(0, -ship_speed);
+			if (--num_lives == 0) {
+				game_over = true;
+				sprites[game_over_sprite].translate(-20, 0);
+			}
 		}
-	}
-	else if (is_key_down(key_down)) {
-		sprites[ship_sprite].translate(0, -ship_speed);
-		if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) ||
-			sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
-			sprites[ship_sprite].translate(0, +ship_speed);
+
+		// use the keyboard to move the ship
+		void move_ship() {
+			const float ship_speed = 0.05f;
+			// left and right arrows
+			if (is_key_down(key_left)) {
+				sprites[ship_sprite].rotateMatrix(8);
+			}
+			else if (is_key_down(key_right)) {
+				sprites[ship_sprite].rotateMatrix(-8);
+			}
+
+			bool collisionBool = true;
+
+			/*for (int i = 0, i < num_borders, i++) {
+
+				collisionBool = collisionBool || sprites[ship_sprite].collides_with(sprites[first_border_sprite + i])
+			}*/
+
+			if (is_key_down('W'))
+			{
+				cameraToWorld.translate(vec3(0.0f, 1.0f, 0));
+			}
+			if (is_key_down('A'))
+			{
+				cameraToWorld.translate(vec3(-1.0f, 0.0f, 0));
+			}
+			if (is_key_down('S'))
+			{
+				cameraToWorld.translate(vec3(0.0f, -1.0f, 0));
+			}
+			if (is_key_down('D'))
+			{
+				cameraToWorld.translate(vec3(1.0f, 0.0f, 0));
+			}
+
+			if (is_key_down(key_up)) {
+				sprites[ship_sprite].translate(0, +ship_speed);
+				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
+					sprites[ship_sprite].translate(0, -ship_speed);
+					cameraToWorld.translate(vec3(0.0f, 1.0f, 0));
+				}
+			}
+			else if (is_key_down(key_down)) {
+				sprites[ship_sprite].translate(0, -ship_speed);
+				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) ||
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
+					sprites[ship_sprite].translate(0, +ship_speed);
 
 
+				}
+			}
 		}
-	}
-}
 
 
-// pick and invader and fire a bomb
-void fire_bombs() {
-	//pBomb *move_bombs;
-	if (bombs_disabled) {
-		--bombs_disabled;
-	}
-	else {
-		// find an invaderer
-		sprite &ship = sprites[ship_sprite];
-		for (int j = randomizer.get(0, num_invaderers); j < num_invaderers; ++j) {
-			sprite &invaderer = sprites[first_invaderer_sprite + j];
-			if (invaderer.is_enabled() && invaderer.is_above(ship, 0.3f)) {
-				// find a bomb
-				
-				for (int i = 0; i != num_bombs; ++i) {
-					if (!sprites[first_bomb_sprite + i].is_enabled()) {
-						sprites[first_bomb_sprite + i].set_relative(invaderer, 0, -0.25f);
-						sprites[first_bomb_sprite + i].is_enabled() = true;
-						bombs_disabled = 30;
-						ALuint source = get_sound_source();
-						alSourcei(source, AL_BUFFER, whoosh);
-						alSourcePlay(source);
+		// pick and invader and fire a bomb
+		void fire_bombs() {
+			//pBomb *move_bombs;
+			if (bombs_disabled) {
+				--bombs_disabled;
+			}
+			else {
+				// find an invaderer
+				sprite &ship = sprites[ship_sprite];
+				for (int j = randomizer.get(0, num_invaderers); j < num_invaderers; ++j) {
+					sprite &invaderer = sprites[first_invaderer_sprite + j];
+					if (invaderer.is_enabled() && invaderer.is_above(ship, 0.3f)) {
+						// find a bomb
+
+						for (int i = 0; i != num_bombs; ++i) {
+							if (!sprites[first_bomb_sprite + i].is_enabled()) {
+								sprites[first_bomb_sprite + i].set_relative(invaderer, 0, -0.25f);
+								sprites[first_bomb_sprite + i].is_enabled() = true;
+								bombs_disabled = 30;
+								ALuint source = get_sound_source();
+								alSourcei(source, AL_BUFFER, whoosh);
+								alSourcePlay(source);
+								return;
+							}
+						}
 						return;
 					}
 				}
-				return;
 			}
 		}
-	}
-}
 
 
 		// animate the bombs
@@ -391,6 +410,8 @@ void fire_bombs() {
 			glDrawElements(GL_TRIANGLES, num_quads * 6, GL_UNSIGNED_INT, indices);
 		}
 
+		dynarray<sprite> maze_sprites; // put it somewhere later pls Thanks to Raul Araujo
+	
 	public:
 
 		// this is called when we construct the class
@@ -427,9 +448,67 @@ void fire_bombs() {
 						);
 					sprites[first_invaderer_sprite + i + j*num_cols].translate(0.28, 0);
 				}
-					
+
 			}
-			
+
+
+			//read CSV file    Thanks to Andy Thomason and jean-pascal Evette
+			std::vector<std::string> borders;
+			//std::vector<int> score;
+			std::ifstream is("../../../assets/invaderers/Maze.csv");
+
+
+			//std::string myString = "45";
+			//int value = atoi(myString.c_str())
+			// store the line here
+			char buffer[2048];
+			int currentLine = 0;
+			// loop over lines
+			while (!is.eof()) {
+
+				//then for each line you store it inside buffer
+				is.getline(buffer, sizeof(buffer));
+
+				// loop over columns
+				//Then you store the first character of the line inside position of buffer
+				char *csv_buffer = buffer;
+
+				//This is going to store the current position of csv_buffer in e, then increase e until you reach the comma
+				for (int col = 0; ; ++col) {
+					char *e = csv_buffer;
+					while (*e != 0 && *e != ',') ++e;
+
+
+					// now b -> e contains the chars in a column
+					
+						borders.emplace_back(csv_buffer, e);
+						std::string myStr = std::string(csv_buffer);
+						myStr = myStr.substr(0, myStr.find(','));
+						
+						std::cout << "(" << currentLine << "," << col << ") =" << myStr.c_str() <<"\n";
+
+						if (myStr == "0")
+						{
+							GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
+							sprite s;
+							s.init(maze,col*0.24f, -currentLine * 0.24f, 0.24f, 0.24f);
+							s.translate(0, 3);
+							maze_sprites.push_back(s);
+		
+						}
+					
+						//score.push_back(std::atoi(csv_buffer));
+					
+
+
+
+					if (*e != ',') break;
+					csv_buffer = e + 1;
+
+				
+				}
+				currentLine++;
+			}
 
 			// set the border to white for clarity
 			GLuint white = resource_dict::get_texture_handle(GL_RGB, "#ffffff");
@@ -442,7 +521,7 @@ void fire_bombs() {
 			sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
 
 
-				//Maze border 1
+			//Maze border 1
 			sprites[first_border_sprite + 4].init(maze, 1, -2.1f, 5.5f, 0.2f);
 			sprites[first_border_sprite + 5].init(maze, -1, -1, 5.5f, 0.2f);
 			sprites[first_border_sprite + 6].init(maze, 1, 1, 5.5f, 0.2f);
@@ -471,7 +550,7 @@ void fire_bombs() {
 			game_over = false;
 			score = 0;
 		}
-
+	
 		// called every frame to move things
 		void simulate() {
 			if (game_over) {
@@ -483,53 +562,7 @@ void fire_bombs() {
 
 
 			//printf("%d \n", timer_count);
-
-			//read CSV file    Thanks to Andy Thomason and jean-pascal Evette
-			std::vector<std::string> names;
-			std::vector<int> score;
-			std::ifstream is("../../../assets/invaderers/Maze.csv");
-
-			// store the line here
-			char buffer[2048];
-
-			// loop over lines
-			while (!is.eof()) {
-
-				//then for each line you store it inside buffer
-				is.getline(buffer, sizeof(buffer));
-
-				// loop over columns
-				//Then you store the first character of the line inside position of buffer
-				char *csv_buffer = buffer;
-
-				//This is going to store the current position of csv_buffer in e, then increase e until you reach the comma
-				for (int col = 0; ; ++col) {
-					char *e = csv_buffer;
-					while (*e != 0 && *e != ',') ++e;
-
-
-					// now b -> e contains the chars in a column
-					if (col == 1) {
-						//names.emplace_back(csv_buffer, e);
-						GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
-						sprites[maze_sprite].init(maze, col, *e, 0.2f, 0.2f);
-						std::cout << col;
-						std::cout << *e;
-					}
-					else if (col == 2) {
-						//score.push_back(std::atoi(csv_buffer));
-					}
-
-
-					if (*e != ',') break;
-					csv_buffer = e + 1;
-
-
-				}
-			}
-
-
-
+			
 			move_ship();
 
 			//fire_missiles();
@@ -600,9 +633,15 @@ void fire_bombs() {
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			// draw all the sprites
-			for (int i = 0; i != num_sprites; ++i) {
+			/*for (int i = 0; i != num_sprites; ++i) {
 				sprites[i].render(texture_shader_, cameraToWorld);
+			}*/
+
+			for (int i = 0; i < maze_sprites.size(); i++)
+			{
+				maze_sprites[i].render(texture_shader_, cameraToWorld);
 			}
+
 
 			char score_text[32];
 			sprintf(score_text, "score: %d   lives: %d\n", score, num_lives);
