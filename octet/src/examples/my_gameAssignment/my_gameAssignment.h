@@ -423,7 +423,7 @@ void fire_bombs() {
 				for (int i = 0; i != num_cols; ++i) {
 					assert(first_invaderer_sprite + i + j*num_cols <= last_invaderer_sprite);
 					sprites[first_invaderer_sprite + i + j*num_cols].init(
-						invaderer, ((float)i - num_cols * 0.5f) * 0.65f/*0.76f*/, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
+						invaderer, ((float)i - num_cols * 0.5f) * 0.65f, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
 						);
 					sprites[first_invaderer_sprite + i + j*num_cols].translate(0.28, 0);
 				}
@@ -447,14 +447,6 @@ void fire_bombs() {
 			sprites[first_border_sprite + 5].init(maze, -1, -1, 5.5f, 0.2f);
 			sprites[first_border_sprite + 6].init(maze, 1, 1, 5.5f, 0.2f);
 
-			
-			// use the missile texture
-			//GLuint missile = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/missile.gif");
-			//for (int i = 0; i != num_missiles; ++i) {
-			//	// create missiles off-screen
-			//	sprites[first_missile_sprite + i].init(missile, 20, 0, 0.0625f, 0.25f);
-			//	sprites[first_missile_sprite + i].is_enabled() = false;
-			//}
 
 			// use the bomb texture
 			GLuint bomb = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/bomb.gif");
@@ -490,7 +482,7 @@ void fire_bombs() {
 			++timer_count;
 
 
-			printf("%d \n", timer_count);
+			//printf("%d \n", timer_count);
 
 			//read CSV file    Thanks to Andy Thomason and jean-pascal Evette
 			std::vector<std::string> names;
@@ -514,18 +506,18 @@ void fire_bombs() {
 				for (int col = 0; ; ++col) {
 					char *e = csv_buffer;
 					while (*e != 0 && *e != ',') ++e;
-					/*if (*e= 1)
-					{
-						GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
-						sprites[maze_sprite].init(maze, , this.y, 0.2f, 0.2f);
-					}*/
+
 
 					// now b -> e contains the chars in a column
-					if (col == 0) {
-						names.emplace_back(csv_buffer, e);
+					if (col == 1) {
+						//names.emplace_back(csv_buffer, e);
+						GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
+						sprites[maze_sprite].init(maze, col, *e, 0.2f, 0.2f);
+						std::cout << col;
+						std::cout << *e;
 					}
-					else if (col == 1) {
-						score.push_back(std::atoi(csv_buffer));
+					else if (col == 2) {
+						//score.push_back(std::atoi(csv_buffer));
 					}
 
 
