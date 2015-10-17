@@ -143,7 +143,7 @@ namespace octet {
 			num_cols = 9,
 			num_missiles = 2,
 			num_bombs = 2,
-			num_borders = 7,
+			num_borders = 4,
 			num_invaderers = num_rows * num_cols,
 
 
@@ -253,51 +253,31 @@ namespace octet {
 				collisionBool = collisionBool || sprites[ship_sprite].collides_with(sprites[first_border_sprite + i])
 			}*/
 
-			if (is_key_down('W'))
-			{
-				cameraToWorld.translate(vec3(0.0f, 1.0f, 0));
-			}
-			if (is_key_down('A'))
-			{
-				cameraToWorld.translate(vec3(-1.0f, 0.0f, 0));
-			}
-			if (is_key_down('S'))
-			{
-				cameraToWorld.translate(vec3(0.0f, -1.0f, 0));
-			}
-			if (is_key_down('D'))
-			{
-				cameraToWorld.translate(vec3(1.0f, 0.0f, 0));
-			}
 
 			if (is_key_down(key_up)) {
 				sprites[ship_sprite].translate(0, +ship_speed);
 				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
+					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3])||
+					sprites[ship_sprite].collides_with(sprites[maze_sprite]))
 					sprites[ship_sprite].translate(0, -ship_speed);
-					cameraToWorld.translate(vec3(0.0f, 1.0f, 0));
-				}
 			}
+
+		
 			else if (is_key_down(key_down)) {
 				sprites[ship_sprite].translate(0, -ship_speed);
 				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
 					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
+					sprites[ship_sprite].collides_with(sprites[maze_sprite]))
 					sprites[ship_sprite].translate(0, +ship_speed);
 
 
 				}
 			}
-		}
+		
 
 
 		// pick and invader and fire a bomb
@@ -411,6 +391,7 @@ namespace octet {
 		}
 
 		dynarray<sprite> maze_sprites; // put it somewhere later pls Thanks to Raul Araujo
+		dynarray<sprite> portal_sprites;
 	
 	public:
 
@@ -436,9 +417,6 @@ namespace octet {
 			GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
 			sprites[game_over_sprite].init(GameOver, 20, 0, 3, 1.5f);
 
-			GLuint WinState = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/SimpleCrate.gif");
-			sprites[portal_sprite].init(WinState, -1, 2.4f, 0.7f, 0.7f);
-
 			GLuint invaderer = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/invaderer.gif");
 			for (int j = 0; j != num_rows; ++j) {
 				for (int i = 0; i != num_cols; ++i) {
@@ -457,9 +435,6 @@ namespace octet {
 			//std::vector<int> score;
 			std::ifstream is("../../../assets/invaderers/Maze.csv");
 
-
-			//std::string myString = "45";
-			//int value = atoi(myString.c_str())
 			// store the line here
 			char buffer[2048];
 			int currentLine = 0;
@@ -485,19 +460,27 @@ namespace octet {
 						std::string myStr = std::string(csv_buffer);
 						myStr = myStr.substr(0, myStr.find(','));
 						
-						std::cout << "(" << currentLine << "," << col << ") =" << myStr.c_str() <<"\n";
+						//std::cout << "(" << currentLine << "," << col << ") =" << myStr.c_str() <<"\n";
 
 						if (myStr == "0")
 						{
 							GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
-							sprite s;
-							s.init(maze,col*0.24f, -currentLine * 0.24f, 0.24f, 0.24f);
-							s.translate(0, 3);
-							maze_sprites.push_back(s);
-		
+							sprite mazeSprite;
+							mazeSprite.init(maze,col*0.25f, -currentLine * 0.25f, 0.25f, 0.25f);
+							mazeSprite.translate(-2.85f, 3.0f);
+							maze_sprites.push_back(mazeSprite);
+						}
+						if (myStr == "1")
+						{
+							GLuint portal = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/portal.gif");
+							std::cout << "Portal SPAWN" << std::endl;
+							sprite portalSprite;
+							portalSprite.init(portal, col*0.25, currentLine * 0.25f, 0.25f, 0.25f);
+							portalSprite.translate(-2.8f, 1.5f);
+							portal_sprites.push_back(portalSprite);
+
 						}
 					
-						//score.push_back(std::atoi(csv_buffer));
 					
 
 
@@ -518,13 +501,7 @@ namespace octet {
 			sprites[first_border_sprite + 1].init(white, 0, 3, 6, 0.2f);
 			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
 			sprites[first_border_sprite + 3].init(white, 3, 0, 0.2f, 6);
-			sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
 
-
-			//Maze border 1
-			sprites[first_border_sprite + 4].init(maze, 1, -2.1f, 5.5f, 0.2f);
-			sprites[first_border_sprite + 5].init(maze, -1, -1, 5.5f, 0.2f);
-			sprites[first_border_sprite + 6].init(maze, 1, 1, 5.5f, 0.2f);
 
 
 			// use the bomb texture
@@ -633,15 +610,18 @@ namespace octet {
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 			// draw all the sprites
-			/*for (int i = 0; i != num_sprites; ++i) {
+			for (int i = 0; i != num_sprites; ++i) {
 				sprites[i].render(texture_shader_, cameraToWorld);
-			}*/
+			}
 
 			for (int i = 0; i < maze_sprites.size(); i++)
 			{
 				maze_sprites[i].render(texture_shader_, cameraToWorld);
 			}
-
+			for (int i = 0; i < portal_sprites.size(); i++)
+			{
+				portal_sprites[i].render(texture_shader_, cameraToWorld);
+			}
 
 			char score_text[32];
 			sprintf(score_text, "score: %d   lives: %d\n", score, num_lives);
