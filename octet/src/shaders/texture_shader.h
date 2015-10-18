@@ -16,6 +16,8 @@ namespace octet { namespace shaders {
     // index for texture sampler
     GLuint samplerIndex_;
   public:
+
+
     void init() {
       // this is the vertex shader.
       // it is called for each corner of each triangle
@@ -39,7 +41,12 @@ namespace octet { namespace shaders {
       const char fragment_shader[] = SHADER_STR(
         varying vec2 uv_;
         uniform sampler2D sampler;
-        void main() { gl_FragColor = texture2D(sampler, uv_); }
+        void main() 
+		{ 
+			vec4 textureCol = texture2D(sampler, uv_);
+			vec4 color = vec4(1, 0, 0, 1);
+			gl_FragColor = textureCol * color; 
+		}
       );
     
       // use the common shader code to compile and link the shaders
