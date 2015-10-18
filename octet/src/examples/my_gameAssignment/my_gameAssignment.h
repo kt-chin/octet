@@ -538,12 +538,21 @@ namespace octet {
 				return;
 			}
 
+
 			sprite &ship = sprites[ship_sprite];
 			sprite &portal = sprites[portal_sprite];
 			sprite &border = sprites[first_border_sprite + (invader_velocity < 0 ? 2 : 3)];
 			sprite &invaderer = sprites[first_invaderer_sprite];
 			sprite &maze = sprites[maze_sprite];
 
+			for (int i = 0; i < portal_sprites.size(); i++)
+			{
+				if (ship.collides_with(portal_sprites[i]))
+				{
+					game_over = true;
+					sprites[game_over_sprite].translate(-20, 0);
+				}
+			}
 			//int timer_count = 0;
 			//++timer_count;
 			//printf("%d \n", timer_count);
@@ -556,14 +565,7 @@ namespace octet {
 
 			move_invaders(0, -invader_velocity);
 
-			for (int i = 0; i < portal_sprites.size(); i++)
-			{
-				if (ship.collides_with(portal_sprites[i]))
-				{
-					game_over = true;
-					sprites[game_over_sprite].translate(-20, 0);
-				}
-			}
+			
 
 			if (invaderer.get_pos().y() < -3)
 			{
