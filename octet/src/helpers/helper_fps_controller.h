@@ -43,9 +43,11 @@ namespace octet { namespace helpers {
         } else {
           friction = 1.0f;
         }
-        if (the_app->is_key_going_down(' ')) {
-          player_node->apply_central_force(camera_node->get_y() * (+10000.0f));
-        }
+
+			if (the_app->is_key_going_down(' ')) {
+				player_node->apply_central_force(camera_node->get_y() * (+10000.0f));
+			}
+
         player_node->set_friction(friction);
 
         mat4t &camera_to_world = camera_node->access_nodeToParent();
