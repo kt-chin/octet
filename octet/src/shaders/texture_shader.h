@@ -45,7 +45,7 @@ namespace octet { namespace shaders {
 		{ 
 			vec4 textureCol = texture2D(sampler, uv_);
 			vec4 color = vec4(1, 0, 0, 1);
-			gl_FragColor = textureCol * color; 
+			gl_FragColor = textureCol * color;
 		}
       );
     

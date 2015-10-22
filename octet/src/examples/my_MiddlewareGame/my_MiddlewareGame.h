@@ -23,20 +23,15 @@ namespace octet {
 			static const vec3 bumps[] = {
 				vec3(100, 0, 100), vec3(50, 0, 50), vec3(150, 0, 50)
 			};
+			vec3 p = bb_min + pos;
+			vec3 uv = uv_min + vec3((float)pos.x(), (float)pos.z(), 0) * uv_delta;
+			return mesh::vertex(p, vec3(0, 1, 0), uv); //made terrain flat thanks to Mircea
 
-			float y =
-				std::exp((pos - bumps[0]).squared() / (-100.0f)) * 1.0f +
-				std::exp((pos - bumps[1]).squared() / (-100.0f)) * 2.0f +
-				std::exp((pos - bumps[2]).squared() / (-10000.0f)) * (-20.0f) +
-				(15.0f)
 				;
 
 			float dy_dx = std::cos(pos.x() * 0.01f);
 			float dy_dz = std::cos(pos.z() * 0.03f);
-			vec3 p = bb_min + pos + vec3(0, y, 0);
-			vec3 normal = normalize(vec3(dy_dx, 1, dy_dz));
-			vec3 uv = uv_min + vec3((float)pos.x(), (float)pos.z(), 0) * uv_delta;
-			return mesh::vertex(p, normal, uv);
+
 		}
 	};
 
@@ -59,9 +54,9 @@ namespace octet {
 		the_camera->get_node()->translate(vec3(0, 4, 0));
 		the_camera->set_far_plane(10000);
 
-      material *red = new material(vec4(1, 0, 0, 1));
+      material *red = new material(vec4(1,  0, 0, 1));
       material *green = new material(vec4(0, 1, 0, 1));
-      material *blue = new material(vec4(0, 0, 1, 1));
+      material *blue = new material(vec4(0,0, 1, 1));
 
       mat4t mat;
       mat.translate(-3, 6, 0);
@@ -86,7 +81,7 @@ namespace octet {
 		  false, 0
 		  );
 
-	  float player_height = 1.83f;
+	  float player_height = 1.5f;
 	  float player_radius = 0.25f;
 	  float player_mass = 90.0f;
 
@@ -98,7 +93,7 @@ namespace octet {
 		  new mesh_sphere(vec3(0), player_radius),
 		  new material(vec4(0, 0, 1, 1)),
 		  true, player_mass,
-		  new btCapsuleShape(0.25f, player_height)
+		  new btCapsuleShape(0.25f, player_height*0.5f)
 		  );
 	  player_node = mi->get_node();
     }
@@ -108,11 +103,13 @@ namespace octet {
       int vx = 0, vy = 0;
       get_viewport_size(vx, vy);
       app_scene->begin_render(vx, vy);
-
+	  printf("%f",player_node->get_position().y());
+	  printf("\n");
+	  //std::cout << player_node->get_position().y() << std::endl;
 	  scene_node *camera_node = the_camera->get_node();
 	  mat4t &camera_to_world = camera_node->access_nodeToParent();
 	  mouse_look_helper.update(camera_to_world);
-
+	  player_node->translate(vec3(0,1,0));
 	  fps_helper.update(player_node, camera_node);
 
       // update matrices. assume 60 fps.
