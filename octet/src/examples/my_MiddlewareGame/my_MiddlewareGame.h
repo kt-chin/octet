@@ -109,7 +109,7 @@ namespace octet {
 	  scene_node *camera_node = the_camera->get_node();
 	  mat4t &camera_to_world = camera_node->access_nodeToParent();
 	  mouse_look_helper.update(camera_to_world);
-	  player_node->translate(vec3(0,1,0));
+	  //player_node->translate(vec3(0,1,0));
 	  fps_helper.update(player_node, camera_node);
 
       // update matrices. assume 60 fps.
