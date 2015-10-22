@@ -1,7 +1,7 @@
 namespace octet {
 	class sprite {
 		// where is our sprite (overkill for a 2D game!)
-		mat4t modelToWorld;
+
 
 		// half the width of the sprite
 		float halfWidth;
@@ -16,11 +16,17 @@ namespace octet {
 		bool enabled;
 
 	public:
+		mat4t modelToWorld;
+
+		vec2 get_pos() {
+			return modelToWorld.row(3).xy();
+		}
+
 		sprite() {
 			texture = 0;
 			enabled = true;
-
 		}
+
 
 		void rotateMatrix(float angle)
 		{
@@ -118,6 +124,9 @@ namespace octet {
 				(fabsf(dx) < halfWidth + margin)
 				;
 		}
+		/*bool is_below(const sprite &rhs, float margin) const {
+			float dx = rhs.modelToWorld[0][3]
+		}*/
 
 		bool &is_enabled() {
 			return enabled;
@@ -135,16 +144,20 @@ namespace octet {
 		enum {
 			num_sound_sources = 8,
 			num_rows = 1,
-			num_cols = 10,
+			num_cols = 9,
 			num_missiles = 2,
 			num_bombs = 2,
-			num_borders = 7,
+			num_borders = 4,
 			num_invaderers = num_rows * num_cols,
-			
+
 
 			// sprite definitions
 			ship_sprite = 0,
 			game_over_sprite,
+
+			portal_sprite,
+
+			maze_sprite,
 
 			first_invaderer_sprite,
 			last_invaderer_sprite = first_invaderer_sprite + num_invaderers - 1,
@@ -198,7 +211,7 @@ namespace octet {
 		ALuint get_sound_source() { return sources[cur_source++ % num_sound_sources]; }
 
 		// called when we hit an enemy
-		void on_hit_invaderer() {
+		/*void on_hit_invaderer() {
 			ALuint source = get_sound_source();
 			alSourcei(source, AL_BUFFER, bang);
 			alSourcePlay(source);
@@ -212,8 +225,9 @@ namespace octet {
 				game_over = true;
 				sprites[game_over_sprite].translate(-20, 0);
 			}
-		}
-
+		}*/
+		dynarray<sprite> maze_sprites; // thanks to Raul
+		dynarray<sprite> portal_sprites;
 		// called when we are hit
 		void on_hit_ship() {
 			ALuint source = get_sound_source();
@@ -231,71 +245,47 @@ namespace octet {
 			const float ship_speed = 0.05f;
 			// left and right arrows
 			if (is_key_down(key_left)) {
-				sprites[ship_sprite].rotateMatrix(8);
+				sprites[ship_sprite].rotateMatrix(10);
 			}
 			else if (is_key_down(key_right)) {
-				sprites[ship_sprite].rotateMatrix(-8);
+				sprites[ship_sprite].rotateMatrix(-10);
 			}
 
-			bool collisionBool = true;
 
-			/*for (int i = 0, i < num_borders, i++) {
-
-				collisionBool = collisionBool || sprites[ship_sprite].collides_with(sprites[first_border_sprite + i])
-			}*/
 			if (is_key_down(key_up)) {
 				sprites[ship_sprite].translate(0, +ship_speed);
-				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) || 
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) || 
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
-					sprites[ship_sprite].translate(0, -ship_speed);
+				for (int i = 0; i < maze_sprites.size(); i++) {
+					if (sprites[ship_sprite].collides_with(maze_sprites[i]))
+						/*sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
+						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
+						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
+						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
+						sprites[ship_sprite].collides_with(sprites[maze_sprite])*/
+					{
+						sprites[ship_sprite].translate(0, -ship_speed);
+						std::cout << "Collision Happened" << std::endl;
+					}
 				}
 			}
+
+
 			else if (is_key_down(key_down)) {
 				sprites[ship_sprite].translate(0, -ship_speed);
-				if (sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 4]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 5]) ||
-					sprites[ship_sprite].collides_with(sprites[first_border_sprite + 6])) {
-					sprites[ship_sprite].translate(0, +ship_speed);
-
-
+				for (int i = 0; i < maze_sprites.size(); i++) {
+					if (sprites[ship_sprite].collides_with(maze_sprites[i]))
+					{
+						sprites[ship_sprite].translate(0, +ship_speed);
+						std::cout << "Collision Happened" << std::endl;
+					}
 				}
 			}
 		}
 		
 
-	/*	// fire button (space)
-		void fire_missiles() {
-			if (missiles_disabled) {
-				--missiles_disabled;
-			}
-			else if (is_key_going_down(' ')) {
-				// find a missile
-				for (int i = 0; i != num_missiles; ++i) {
-					if (!sprites[first_missile_sprite + i].is_enabled()) {
-						sprites[first_missile_sprite + i].set_relative(sprites[ship_sprite], 0, 0.5f);
-						sprites[first_missile_sprite + i].is_enabled() = true;
-					
-						missiles_disabled = 5;
-						ALuint source = get_sound_source();
-						alSourcei(source, AL_BUFFER, whoosh);
-						alSourcePlay(source);
-						break;
-					}
-				}
-			}
-		}*/
 
 		// pick and invader and fire a bomb
 		void fire_bombs() {
+			//pBomb *move_bombs;
 			if (bombs_disabled) {
 				--bombs_disabled;
 			}
@@ -306,6 +296,7 @@ namespace octet {
 					sprite &invaderer = sprites[first_invaderer_sprite + j];
 					if (invaderer.is_enabled() && invaderer.is_above(ship, 0.3f)) {
 						// find a bomb
+
 						for (int i = 0; i != num_bombs; ++i) {
 							if (!sprites[first_bomb_sprite + i].is_enabled()) {
 								sprites[first_bomb_sprite + i].set_relative(invaderer, 0, -0.25f);
@@ -323,56 +314,26 @@ namespace octet {
 			}
 		}
 
-		// animate the missiles
-		/*void move_missiles() {
-			const float missile_speed = 0.3f;
-			for (int i = 0; i != num_missiles; ++i) {
-				sprite &missile = sprites[first_missile_sprite + i];
-				if (missile.is_enabled()) {
-					missile.translate(0, missile_speed);
-					for (int j = 0; j != num_invaderers; ++j) {
-						sprite &invaderer = sprites[first_invaderer_sprite + j];
-						if (invaderer.is_enabled() && missile.collides_with(invaderer)) {
-							invaderer.is_enabled() = false;
-							invaderer.translate(20, 0);
-							missile.is_enabled() = false;
-							missile.translate(20, 0);
-							on_hit_invaderer();
-
-							goto next_missile;
-						}
-					}
-					if (missile.collides_with(sprites[first_border_sprite]) || 
-						missile.collides_with(sprites[first_border_sprite + 1]) || 
-						missile.collides_with(sprites[first_border_sprite + 2]) || 
-						missile.collides_with(sprites[first_border_sprite + 3])) {
-						missile.is_enabled() = false;
-						missile.translate(20, 0);
-					}
-				}
-			next_missile:;
-			}
-		}*/
 
 		// animate the bombs
 		void move_bombs() {
-			const float bomb_speed = 0.2f;
+			const float speed = 0.2f;
+			const float &bomb_speed = speed;
 			for (int i = 0; i != num_bombs; ++i) {
 				sprite &bomb = sprites[first_bomb_sprite + i];
-				if (bomb.is_enabled()) {
-					bomb.translate(0, -bomb_speed);
-					if (bomb.collides_with(sprites[ship_sprite])) {
-						bomb.is_enabled() = false;
-						bomb.translate(20, 0);
-						bombs_disabled = 50;
-						on_hit_ship();
-						goto next_bomb;
-					}
-					if (bomb.collides_with(sprites[first_border_sprite + 0])) {
-						bomb.is_enabled() = false;
-						bomb.translate(20, 0);
-					}
+				bomb.translate(0, -bomb_speed);
+				if (bomb.collides_with(sprites[ship_sprite])) {
+					bomb.is_enabled() = false;
+					bomb.translate(20, 0);
+					bombs_disabled = 50;
+					on_hit_ship();
+					goto next_bomb;
 				}
+				if (bomb.get_pos().y() < -3) {
+					bomb.is_enabled() = false;
+					bomb.translate(20, 0);
+				}
+
 			next_bomb:;
 			}
 		}
@@ -388,7 +349,7 @@ namespace octet {
 		}
 
 		// check if any invaders hit the sides.
-		bool invaders_collide(sprite &border) {
+/*		bool invaders_collide(sprite &border) {
 			for (int j = 0; j != num_invaderers; ++j) {
 				sprite &invaderer = sprites[first_invaderer_sprite + j];
 				if (invaderer.is_enabled() && invaderer.collides_with(border)) {
@@ -396,7 +357,7 @@ namespace octet {
 				}
 			}
 			return false;
-		}
+		}*/
 
 
 		void draw_text(texture_shader &shader, float x, float y, float scale, const char *text) {
@@ -432,17 +393,20 @@ namespace octet {
 			glDrawElements(GL_TRIANGLES, num_quads * 6, GL_UNSIGNED_INT, indices);
 		}
 
+	
 	public:
+		
+
 
 		// this is called when we construct the class
 		my_gameAssignment(int argc, char **argv) : app(argc, argv), font(512, 256, "assets/big.fnt") {
 		}
 
+
 		// this is called once OpenGL is initialized
 		void app_init() {
 			// set up the shader
 			texture_shader_.init();
-
 			// set up the matrices with a camera 5 units from the origin
 			cameraToWorld.loadIdentity();
 			cameraToWorld.translate(0, 0, 3);
@@ -450,7 +414,7 @@ namespace octet {
 			font_texture = resource_dict::get_texture_handle(GL_RGBA, "assets/big_0.gif");
 
 			GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/theShip.gif");
-			sprites[ship_sprite].init(ship, 0, -2.75f, 0.25f, 0.25);
+			sprites[ship_sprite].init(ship, 2.7f, -2.70f, 0.25f, 0.25);
 			sprites[ship_sprite].rotateMatrix(90);
 
 			GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
@@ -461,36 +425,88 @@ namespace octet {
 				for (int i = 0; i != num_cols; ++i) {
 					assert(first_invaderer_sprite + i + j*num_cols <= last_invaderer_sprite);
 					sprites[first_invaderer_sprite + i + j*num_cols].init(
-						invaderer, ((float)i - num_cols * 0.5f) * 0.5f, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
+						invaderer, ((float)i - num_cols * 0.5f) * 0.65f, 2.50f - ((float)j * 0.5f), 0.25f, 0.25f
 						);
+					sprites[first_invaderer_sprite + i + j*num_cols].translate(0.28, 0);
 				}
+
+			}
+
+
+			//read CSV file    Thanks to Andy Thomason and jean-pascal Evette
+			std::vector<std::string> borders;
+			//std::vector<int> score;
+			std::ifstream is("../../../assets/invaderers/Maze2.0.csv");
+
+			// store the line here
+			char buffer[2048];
+			int currentLine = 0;
+			// loop over lines
+			while (!is.eof()) {
+
+				//then for each line you store it inside buffer
+				is.getline(buffer, sizeof(buffer));
+
+				// loop over columns
+				//Then you store the first character of the line inside position of buffer
+				char *csv_buffer = buffer;
+
+				//This is going to store the current position of csv_buffer in e, then increase e until you reach the comma
+				for (int col = 0; ; ++col) {
+					char *e = csv_buffer;
+					while (*e != 0 && *e != ',') ++e;
+
+
+					// now b -> e contains the chars in a column
+					
+						borders.emplace_back(csv_buffer, e);
+						std::string myStr = std::string(csv_buffer);
+						myStr = myStr.substr(0, myStr.find(','));
+						
+						//std::cout << "(" << currentLine << "," << col << ") =" << myStr.c_str() <<"\n";
+
+						if (myStr == "0")
+						{
+							GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
+							sprite mazeSprite;
+							mazeSprite.init(maze,col*0.245f, -currentLine * 0.245f, 0.245f, 0.245f);
+							mazeSprite.translate(-2.88f, 2.9f);
+							maze_sprites.push_back(mazeSprite);
+						}
+						if (myStr == "1")
+						{
+							GLuint portal = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/portal.gif");
+							std::cout << "Portal SPAWN" << std::endl;
+							sprite portalSprite;
+							portalSprite.init(portal, col*0.2f, currentLine * 0.2f, 0.2f, 0.2f);
+							portalSprite.translate(-2.8f, 1.5f);
+							portal_sprites.push_back(portalSprite);
+
+						}
+					
+					
+
+
+
+					if (*e != ',') break;
+					csv_buffer = e + 1;
+
+				
+				}
+				currentLine++;
 			}
 
 			// set the border to white for clarity
 			GLuint white = resource_dict::get_texture_handle(GL_RGB, "#ffffff");
-			GLuint red = resource_dict::get_texture_handle(GL_RGB, "#ff0000");
-			sprites[first_border_sprite + 0].init(white, 0, -3, 6, 0.2f);
+			//GLuint red = resource_dict::get_texture_handle(GL_RGB, "#ff0000");
+			GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
+
+			/*sprites[first_border_sprite + 0].init(white, 0, -3, 6, 0.2f);
 			sprites[first_border_sprite + 1].init(white, 0, 3, 6, 0.2f);
 			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
-			sprites[first_border_sprite + 3].init(white, 3, 0, 0.2f, 6);
-
-		//	sprites[first_border_sprite + 4].init(white, 4, 2, 0.1f, 3);
+			sprites[first_border_sprite + 3].init(white, 3, 0, 0.2f, 6);*/
 
 
-			//Maze border 1
-			sprites[first_border_sprite + 4].init(red, 1, -2.1f, 5.5f, 0.2f);
-			sprites[first_border_sprite + 5].init(white, -1, -1, 5.5f, 0.2f);
-			sprites[first_border_sprite + 6].init(white, 1, 1, 5.5f, 0.2f);
-
-
-
-			// use the missile texture
-			GLuint missile = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/missile.gif");
-			for (int i = 0; i != num_missiles; ++i) {
-				// create missiles off-screen
-				sprites[first_missile_sprite + i].init(missile, 20, 0, 0.0625f, 0.25f);
-				sprites[first_missile_sprite + i].is_enabled() = false;
-			}
 
 			// use the bomb texture
 			GLuint bomb = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/bomb.gif");
@@ -509,39 +525,69 @@ namespace octet {
 			// sundry counters and game state.
 			missiles_disabled = 0;
 			bombs_disabled = 50;
-			invader_velocity = 0.01f;
+			invader_velocity = 0.055f;
 			live_invaderers = num_invaderers;
-			num_lives = 3;
+			num_lives = 5;
 			game_over = false;
 			score = 0;
 		}
-
+	
 		// called every frame to move things
 		void simulate() {
 			if (game_over) {
 				return;
 			}
 
-			move_ship();
 
-			//fire_missiles();
+			sprite &ship = sprites[ship_sprite];
+			sprite &portal = sprites[portal_sprite];
+			sprite &border = sprites[first_border_sprite + (invader_velocity < 0 ? 2 : 3)];
+			sprite &invaderer = sprites[first_invaderer_sprite];
+			sprite &maze = sprites[maze_sprite];
+
+			for (int i = 0; i < portal_sprites.size(); i++)
+			{
+				if (ship.collides_with(portal_sprites[i]))
+				{
+					game_over = true;
+					sprites[game_over_sprite].translate(-20, 0);
+				}
+			}
+			//int timer_count = 0;
+			//++timer_count;
+			//printf("%d \n", timer_count);
+			
+			move_ship();
 
 			fire_bombs();
 
-			//move_missiles();
-
 			move_bombs();
 
-			move_invaders(invader_velocity, 0);
+			move_invaders(0, -invader_velocity);
 
-			sprite &border = sprites[first_border_sprite + (invader_velocity < 0 ? 2 : 3)];
-			sprite &invaderer = sprites[first_invaderer_sprite];
-			if (invaders_collide(border)) {
-				invader_velocity = -invader_velocity;
-				//move_invaders(invader_velocity, -0.1f);
+			
 
+			if (invaderer.get_pos().y() < -3)
+			{
+				for (int j = 0; j != num_rows; ++j) {
+					for (int i = 0; i != num_cols; ++i) {
+						sprite &invaderer = sprites[first_invaderer_sprite + i];
+						invaderer.translate(0,5.7f);
+							
+					}
+				}
 			}
-		}
+		
+	
+		
+	
+		//	sprites[first_invaderer_sprite]invaderer.translate(0, 20);
+	
+	//if (invaders_collide(border)) {
+		//invader_velocity = -invader_velocity;
+		//move_invaders(invader_velocity, -0.1f);
+//}
+}
 
 		// this is called to draw the world
 		void draw_world(int x, int y, int w, int h) {
@@ -564,6 +610,15 @@ namespace octet {
 			// draw all the sprites
 			for (int i = 0; i != num_sprites; ++i) {
 				sprites[i].render(texture_shader_, cameraToWorld);
+			}
+
+			for (int i = 0; i < maze_sprites.size(); i++)
+			{
+				maze_sprites[i].render(texture_shader_, cameraToWorld);
+			}
+			for (int i = 0; i < portal_sprites.size(); i++)
+			{
+				portal_sprites[i].render(texture_shader_, cameraToWorld);
 			}
 
 			char score_text[32];

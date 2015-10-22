@@ -41,10 +41,10 @@ namespace octet { namespace helpers {
           player_node->activate();
           player_node->apply_central_force(camera_node->get_z() * (+1000.0f));
         } else {
-          friction = 1.0f;
+          friction = 5.0f;
         }
 
-			if (the_app->is_key_going_down(' ')) {
+			if (the_app->is_key_going_down(' ') && (player_node->get_position().y() < -0.376f)) {
 				player_node->apply_central_force(camera_node->get_y() * (+10000.0f));
 			}
 
