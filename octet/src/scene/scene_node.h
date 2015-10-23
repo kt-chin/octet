@@ -158,6 +158,12 @@ namespace octet { namespace scene {
       return calcModelToWorld().w().xyz();
     }
 
+
+	////Get rotation of node in world space
+	//vec3 get_rotation() {
+	//	return calcModelToWorld().rotateY();
+	//}
+
     /// get enabled state
     bool get_enabled() const {
       return enabled;

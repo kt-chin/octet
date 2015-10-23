@@ -57,21 +57,30 @@ namespace octet {
       material *red = new material(vec4(1,  0, 0, 1));
       material *green = new material(vec4(0, 1, 0, 1));
       material *blue = new material(vec4(0,0, 1, 1));
+	  material *yellow = new material(vec4(1, 0.165f, 0));
 
       mat4t mat;
-      mat.translate(-3, 6, 0);
-      app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), red, true);
+      mat.translate(-3, 1, 0);
+      app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
+
 
       mat.loadIdentity();
-      mat.translate(0, 10, 0);
+      mat.translate(0, 1, 5);
       app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, true);
 
       mat.loadIdentity();
-      mat.translate( 3, 6, 0);
+      mat.translate( 3, 2, 0);
+	  mat.rotate(90, 1, 0, 0);
       app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 0, 0), 2, 4)), blue, true);
+	  
+	  mat.loadIdentity();
+	  mat.translate(3,2,1);
+	  app_scene->add_shape(mat, new mesh_box(vec3(2, 1, 4)), yellow, true);
 
 	  mat.loadIdentity();
 	  mat.translate(0, -0.5f, 0);
+	  
+
 
       // ground
 	  app_scene->add_shape(
@@ -86,7 +95,7 @@ namespace octet {
 	  float player_mass = 90.0f;
 
 	  mat.loadIdentity();
-	  mat.translate(0, player_height*0.5f, -50);
+	  mat.translate(0, player_height*0.5f, 40);
 
 	  mesh_instance *mi = app_scene->add_shape(
 		  mat,
@@ -103,13 +112,15 @@ namespace octet {
       int vx = 0, vy = 0;
       get_viewport_size(vx, vy);
       app_scene->begin_render(vx, vy);
-	  printf("%f",player_node->get_position().y());
+
+	  //printf("%f",player_node->get_position().x());
 	  printf("\n");
-	  //std::cout << player_node->get_position().y() << std::endl;
+	  
 	  scene_node *camera_node = the_camera->get_node();
+	  //camera_node->set_rotation(90);
 	  mat4t &camera_to_world = camera_node->access_nodeToParent();
 	  mouse_look_helper.update(camera_to_world);
-	  //player_node->translate(vec3(0,1,0));
+
 	  fps_helper.update(player_node, camera_node);
 
       // update matrices. assume 60 fps.

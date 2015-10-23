@@ -44,10 +44,9 @@ namespace octet { namespace helpers {
           friction = 5.0f;
         }
 
+			//Player only jumps once when below threshold.
 			if (the_app->is_key_going_down(' ') && (player_node->get_position().y() <= -0.375f)) {
 				player_node->apply_central_force(camera_node->get_y() * (+10000.0f));
-				printf("you should be jumping");
-				printf("\n");
 			}
 
         player_node->set_friction(friction);
