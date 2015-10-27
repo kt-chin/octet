@@ -46,6 +46,7 @@ namespace octet {
 
     /// this is called once OpenGL is initialized
     void app_init() {
+		
 		mouse_look_helper.init(this, 200.0f / 360.0f, false);
 		fps_helper.init(this);
 		app_scene = new visual_scene();
@@ -64,14 +65,21 @@ namespace octet {
 
       mat.loadIdentity();
       mat.translate(0, 10, 0);
-      app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, true);
+      app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), green, true);
 
       mat.loadIdentity();
       mat.translate( 3, 6, 0);
+	  mat.rotate(90, 1, 0, 0);
       app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 0, 0), 2, 4)), blue, true);
-
+	  
+	
 	  mat.loadIdentity();
 	  mat.translate(0, -0.5f, 0);
+	  
+
+	  //Player fire
+//	  if(fps_helper.init)
+
 
       // ground
 	  app_scene->add_shape(
@@ -86,7 +94,7 @@ namespace octet {
 	  float player_mass = 90.0f;
 
 	  mat.loadIdentity();
-	  mat.translate(0, player_height*0.5f, -50);
+	  mat.translate(0, player_height*0.5f, 50);
 
 	  mesh_instance *mi = app_scene->add_shape(
 		  mat,
@@ -105,7 +113,6 @@ namespace octet {
       app_scene->begin_render(vx, vy);
 	  printf("%f",player_node->get_position().y());
 	  printf("\n");
-	  //std::cout << player_node->get_position().y() << std::endl;
 	  scene_node *camera_node = the_camera->get_node();
 	  mat4t &camera_to_world = camera_node->access_nodeToParent();
 	  mouse_look_helper.update(camera_to_world);
