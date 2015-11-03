@@ -59,23 +59,54 @@ namespace octet {
       material *blue = new material(vec4(0,0, 1, 1));
 	  material *yellow = new material(vec4(1, 0.165f, 0));
 
+
+
       mat4t mat;
-      mat.translate(-3, 1, 0);
-      app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
+      //mat.translate(-3, 1, 0);
+      //app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
 
+
+      //mat.loadIdentity();
+      //mat.translate(0, 1, 5);
+      //app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, true);
 
       mat.loadIdentity();
-      mat.translate(0, 1, 5);
-      app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, true);
-
-      mat.loadIdentity();
-      mat.translate( 3, 2, 0);
+      
 	  mat.rotate(90, 1, 0, 0);
-      app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 0, 0), 2, 4)), blue, true);
+	  mat.translate(0, 4, -4);
+      scene_node *node1 = app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 4, 0), 0.5f, 4)), blue, false);
+	  btRigidBody *rb1 = node1->get_rigid_body();
 	  
 	  mat.loadIdentity();
-	  mat.translate(3,2,1);
-	  app_scene->add_shape(mat, new mesh_box(vec3(2, 1, 4)), yellow, true);
+	  mat.translate(-1.5f,4,0);
+	  scene_node *node2 = app_scene->add_shape(mat, new mesh_box(vec3(1, 4, 0.5f)), yellow, true);
+	  btRigidBody *rb2 = node2->get_rigid_body();
+
+	  btVector3 *anchor1 = new btVector3(-0.5f, 4, 0);
+	  btVector3 *anchor2 = new btVector3(1, 0, 0);
+
+	  btVector3 *axis1 = new btVector3(0, 0, 1);
+	  btVector3 *axis2 = new btVector3(0, 1, 0);
+
+	  btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb2, *rb1, *anchor2, *anchor1, *axis2, *axis1, true);
+	  //HingeConstraint->setDbgDrawSize(btScalar(5.f));
+
+	  HingeConstraint->setLimit(-120, 120,0.9f, 0.3f, 1.0f);
+
+	  app_scene->addHingeConstraint(HingeConstraint);
+
+	  /*mat.loadIdentity();
+	  mat.translate(2, 0, 0);
+	  app_scene->add_shape(mat, new mesh_box(vec3(1, 1, 1)), yellow, false);
+
+
+	  mat.loadIdentity();
+	  mat.translate(0, 2, 0);
+	  app_scene->add_shape(mat, new mesh_box(vec3(1, 1, 1)), yellow, false);
+
+	  mat.loadIdentity();
+	  mat.translate(0, 0, 5);
+	  app_scene->add_shape(mat, new mesh_box(vec3(1, 1, 1)), yellow, false);*/
 
 	  mat.loadIdentity();
 	  mat.translate(0, -0.5f, 0);
@@ -97,14 +128,18 @@ namespace octet {
 	  mat.loadIdentity();
 	  mat.translate(0, player_height*0.5f, 40);
 
-	  mesh_instance *mi = app_scene->add_shape(
+	  scene_node *mi = app_scene->add_shape(
 		  mat,
 		  new mesh_sphere(vec3(0), player_radius),
 		  new material(vec4(0, 0, 1, 1)),
 		  true, player_mass,
 		  new btCapsuleShape(0.25f, player_height*0.5f)
 		  );
-	  player_node = mi->get_node();
+	  player_node = mi;
+
+
+
+
     }
 
     /// this is called to draw the world
@@ -113,7 +148,7 @@ namespace octet {
       get_viewport_size(vx, vy);
       app_scene->begin_render(vx, vy);
 
-	  //printf("%f",player_node->get_position().x());
+	  printf("%f",player_node->get_position().x());
 	  printf("\n");
 	  
 	  scene_node *camera_node = the_camera->get_node();

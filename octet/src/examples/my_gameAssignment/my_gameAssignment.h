@@ -256,11 +256,6 @@ namespace octet {
 				sprites[ship_sprite].translate(0, +ship_speed);
 				for (int i = 0; i < maze_sprites.size(); i++) {
 					if (sprites[ship_sprite].collides_with(maze_sprites[i]))
-						/*sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
-						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
-						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
-						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
-						sprites[ship_sprite].collides_with(sprites[maze_sprite])*/
 					{
 						sprites[ship_sprite].translate(0, -ship_speed);
 						std::cout << "Collision Happened" << std::endl;
