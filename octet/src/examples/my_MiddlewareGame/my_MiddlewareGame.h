@@ -78,7 +78,7 @@ namespace octet {
       mat.loadIdentity();
       
 	 // mat.rotate(90, 1, 0, 0);
-	  mat.translate(0, 0, 0);
+	  mat.translate(0, 0, 10);
       scene_node *node1 = app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 4, 0), 0.5f, 4)), blue, false);
 	  btRigidBody *rb1 = node1->get_rigid_body();
 	  
@@ -159,16 +159,19 @@ namespace octet {
 	  scene_node *camera_node = the_camera->get_node();
 
 	  mat4t &camera_to_world = camera_node->access_nodeToParent();
-
-	  fps_helper.update(player_node, camera_node);
-
-	  //Rotates player camera
-	  camera_node->rotate(180, vec3(0, 1, 0));
-	  player_node->rotate(180, vec3(0, 1, 0));
+	  player_node->rotate(180.0f, vec3(0, 1, 0));
 	  mouse_look_helper.update(camera_to_world);
+	  
+	  //Rotates player camera
+	 camera_node->rotate(180.0f, vec3(0, 1, 0));
+	 
+	 fps_helper.update(player_node, camera_node);
+
+
       // update matrices. assume 60 fps.
       app_scene->update(1.0f/15);
 
+	  
       // draw the scene
       app_scene->render((float)vx / vy);
     }

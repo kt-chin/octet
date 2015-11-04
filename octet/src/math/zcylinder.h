@@ -50,11 +50,14 @@ namespace octet { namespace math {
       for (unsigned i = 0; i != steps; ++i) {
         float c = cosf(i * k);
         float s = sinf(i * k);
-		sink.add_vertex(vec3(c, s, 0), vec3(c, s, 1), center + vec3(c*radius, s*radius, half_extent));
-        //sink.add_vertex(center + vec3(c*radius, s*radius, half_extent), vec3(c, s, 0), vec3(i * ku, 0, 0));
-       // sink.add_vertex(center + vec3(c*radius, s*radius,  -half_extent), vec3(c, s, 0), vec3(i * ku, 1, 0));
-        //sink.add_vertex(center + vec3(c*radius, s*radius, -half_extent), vec3(0, 0, -1), vec3(c, s, -1));
-        //sink.add_vertex(center + vec3(c*radius, s*radius,  half_extent), vec3(0, 0,  1), vec3(c, s,  1));
+
+		//Code to position the oritentation of the cylinder
+		//Modified to align the cylinder along the Y-axis
+		//Original half_extent variable determines where to draw cylinder length (originally on the z-axis).
+        sink.add_vertex(center + vec3(c*radius , -half_extent, s*radius), vec3(c, s, 0), vec3(i * ku, 0, 0));
+        sink.add_vertex(center + vec3(c*radius, half_extent, s*radius), vec3(c, s, 0), vec3(i * ku, 1, 0));
+        sink.add_vertex(center + vec3(c*radius, -half_extent, s*radius), vec3(0, 0, -1), vec3(c, s, -1));
+        sink.add_vertex(center + vec3(c*radius, half_extent, s*radius), vec3(0, 0,  1), vec3(c, s,  1));
       }
 
       // sides
