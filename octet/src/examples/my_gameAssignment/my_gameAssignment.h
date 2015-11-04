@@ -92,6 +92,8 @@ namespace octet {
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 		}
 
+
+
 		// move the object
 		void translate(float x, float y) {
 			modelToWorld.translate(x, y, 0);
@@ -140,7 +142,7 @@ namespace octet {
 
 		// shader to draw a textured triangle
 		texture_shader texture_shader_;
-
+		texture_shader intro_Shader;
 		enum {
 			num_sound_sources = 8,
 			num_rows = 1,
@@ -402,6 +404,7 @@ namespace octet {
 		void app_init() {
 			// set up the shader
 			texture_shader_.init();
+			intro_Shader.init();
 			// set up the matrices with a camera 5 units from the origin
 			cameraToWorld.loadIdentity();
 			cameraToWorld.translate(0, 0, 3);

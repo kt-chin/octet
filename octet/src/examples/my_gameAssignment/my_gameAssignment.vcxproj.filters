@@ -428,6 +428,9 @@
       <Filter>containers</Filter>
     </ClInclude>
     <ClInclude Include="my_gameAssignment.h" />
+    <ClInclude Include="intro_Shader.h">
+      <Filter>shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\resources\mesh_builder.inl">

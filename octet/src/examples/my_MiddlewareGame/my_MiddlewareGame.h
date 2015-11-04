@@ -44,6 +44,11 @@ namespace octet {
     ~my_MiddlewareGame() {
     }
 
+	void get_Rotate()
+	{
+
+	}
+
     /// this is called once OpenGL is initialized
     void app_init() {
 		mouse_look_helper.init(this, 200.0f / 360.0f, false);
@@ -72,28 +77,29 @@ namespace octet {
 
       mat.loadIdentity();
       
-	  mat.rotate(90, 1, 0, 0);
-	  mat.translate(0, 4, -4);
+	 // mat.rotate(90, 1, 0, 0);
+	  mat.translate(0, 0, 0);
       scene_node *node1 = app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 4, 0), 0.5f, 4)), blue, false);
 	  btRigidBody *rb1 = node1->get_rigid_body();
 	  
-	  mat.loadIdentity();
-	  mat.translate(-1.5f,4,0);
-	  scene_node *node2 = app_scene->add_shape(mat, new mesh_box(vec3(1, 4, 0.5f)), yellow, true);
-	  btRigidBody *rb2 = node2->get_rigid_body();
+	/*  mat.loadIdentity();
+	  mat.translate(-1.5f,4,-10);
+	  scene_node *node2 = app_scene->add_shape(mat, new mesh_box(vec3(5, 4, 0.5f)), yellow, true);
+	  btRigidBody *rb2 = node2->get_rigid_body();*/
 
-	  btVector3 *anchor1 = new btVector3(-0.5f, 4, 0);
+	/*  btVector3 *anchor1 = new btVector3(-0.5f, 4, 0);
 	  btVector3 *anchor2 = new btVector3(1, 0, 0);
 
 	  btVector3 *axis1 = new btVector3(0, 0, 1);
 	  btVector3 *axis2 = new btVector3(0, 1, 0);
 
-	  btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb2, *rb1, *anchor2, *anchor1, *axis2, *axis1, true);
+	  btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb2, *rb1, *anchor2, *anchor1, *axis2, *axis1, true);*/ //Cylinder joints
+
+
 	  //HingeConstraint->setDbgDrawSize(btScalar(5.f));
 
-	  HingeConstraint->setLimit(-120, 120,0.9f, 0.3f, 1.0f);
-
-	  app_scene->addHingeConstraint(HingeConstraint);
+	  //HingeConstraint->setLimit(0, 60,0.9f, 0.3f, 1.0f); //constraints
+	  //app_scene->addHingeConstraint(HingeConstraint);
 
 	  /*mat.loadIdentity();
 	  mat.translate(2, 0, 0);
@@ -116,8 +122,8 @@ namespace octet {
       // ground
 	  app_scene->add_shape(
 		  mat,
-		  new mesh_terrain(vec3(100.0f, 0.5f, 100.0f), ivec3(100, 1, 100), source),
-		  new material(new image("assets/grass.jpg")),
+		  new mesh_terrain(vec3(100.0f, 0.349762f, 100.0f), ivec3(100, 1, 100), source),
+		  new material(new image("assets/rocks.jpg")),
 		  false, 0
 		  );
 
@@ -126,18 +132,17 @@ namespace octet {
 	  float player_mass = 90.0f;
 
 	  mat.loadIdentity();
-	  mat.translate(0, player_height*0.5f, 40);
+	  mat.translate(0, player_height*0.8f, 0);
+	  //mat.rotate(90,0,1,0);
 
 	  scene_node *mi = app_scene->add_shape(
 		  mat,
 		  new mesh_sphere(vec3(0), player_radius),
 		  new material(vec4(0, 0, 1, 1)),
 		  true, player_mass,
-		  new btCapsuleShape(0.25f, player_height*0.5f)
+		  new btCapsuleShape(0.25f, player_height*0.8f)
 		  );
 	  player_node = mi;
-
-
 
 
     }
@@ -148,16 +153,19 @@ namespace octet {
       get_viewport_size(vx, vy);
       app_scene->begin_render(vx, vy);
 
-	  printf("%f",player_node->get_position().x());
+	  printf("%f",player_node->get_position().y());
 	  printf("\n");
 	  
 	  scene_node *camera_node = the_camera->get_node();
-	  //camera_node->set_rotation(90);
+
 	  mat4t &camera_to_world = camera_node->access_nodeToParent();
-	  mouse_look_helper.update(camera_to_world);
 
 	  fps_helper.update(player_node, camera_node);
 
+	  //Rotates player camera
+	  camera_node->rotate(180, vec3(0, 1, 0));
+	  player_node->rotate(180, vec3(0, 1, 0));
+	  mouse_look_helper.update(camera_to_world);
       // update matrices. assume 60 fps.
       app_scene->update(1.0f/15);
 
