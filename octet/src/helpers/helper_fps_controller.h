@@ -46,7 +46,7 @@ namespace octet { namespace helpers {
         }
 
 			//Player only jumps once when below threshold.
-			if (the_app->is_key_going_down(' ') && (player_node->get_position().y() <= 0.001f)) {
+			if (the_app->is_key_going_down(' ') && (player_node->get_position().y() <= 1.38f)) {
 				player_node->apply_central_force(camera_node->get_y() * (+10000.0f));
 			}
 
