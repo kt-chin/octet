@@ -71,7 +71,6 @@ namespace octet {
       //app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, true);
 
       //First Door
-	 // mat.rotate(90, 1, 0, 0);
       mat.loadIdentity();
 	  mat.translate(0, 0, 10);
       scene_node *node1 = app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 4, 0), 0.5f, 4)), blue, false);
