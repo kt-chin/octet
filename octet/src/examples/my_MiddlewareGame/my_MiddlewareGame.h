@@ -45,6 +45,11 @@ namespace octet {
     }
 
     /// this is called once OpenGL is initialized
+
+	/*void get_Yrotation(float angle)
+	{
+		app_scene->rotate(angle)
+	}*/
     void app_init() {
 		mouse_look_helper.init(this, 200.0f / 360.0f, false);
 		fps_helper.init(this);
@@ -77,15 +82,15 @@ namespace octet {
 	  btRigidBody *rb1 = node1->get_rigid_body();
 	  
 	  mat.loadIdentity();
-	  mat.translate(4,4,10);
-	  scene_node *node2 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.5f)), yellow, true);
+	  mat.translate(4,4.5f,10);
+	  scene_node *node2 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.2f)), yellow, true);
 	  btRigidBody *rb2 = node2->get_rigid_body();
 
-	  btVector3 *anchor1 = new btVector3(1, 2, 0);
-	  btVector3 *anchor2 = new btVector3(-1.5f, 2, 0);
+	  btVector3 *anchor1 = new btVector3(0.25f, 8, 0);
+	  btVector3 *anchor2 = new btVector3(-4, 4.1f, 0);
 
 	  btVector3 *axis1 = new btVector3(0, 1, 0);
-	  btVector3 *axis2 = new btVector3(1, 0, 0);
+	  btVector3 *axis2 = new btVector3(0, 1, 0);
 
 	  //btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb1, *rb2, *anchor1, *anchor2, *axis1, *axis2, true);
 	  btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb2, *rb1, *anchor2, *anchor1, *axis2, *axis1, true); //Cylinder joints
@@ -93,7 +98,7 @@ namespace octet {
 
 	  //HingeConstraint->setDbgDrawSize(btScalar(5.0f));
 
-	  HingeConstraint->setLimit(60, 0,0.9f, 0.3f, 1.0f); //constraints
+	  HingeConstraint->setLimit(160, 0,0.9f, 0.3f, 1.0f); //constraints
 	  app_scene->addHingeConstraint(HingeConstraint);
 
 
@@ -108,16 +113,17 @@ namespace octet {
 	  scene_node *node4 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.5f)), yellow, true);
 	  btRigidBody *rb4 = node4->get_rigid_body();
 
-	  btVector3 *anchor3 = new btVector3(15, 2, 0);
-	  btVector3 *anchor4 = new btVector3(1.5f, 2, 0);
+	  btVector3 *anchor3 = new btVector3(-0.25f, 8, 0);
+	  btVector3 *anchor4 = new btVector3(4, 4.1f, 0);
 
 	  btVector3 *axis3 = new btVector3(0, 1, 0);
-	  btVector3 *axis4 = new btVector3(1, 0, 0);
+	  btVector3 *axis4 = new btVector3(0, 1, 0);
 
 	  //btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb1, *rb2, *anchor1, *anchor2, *axis1, *axis2, true);
 	  btHingeConstraint *HingeConstraint2 = new btHingeConstraint(*rb4, *rb3, *anchor4, *anchor3, *axis4, *axis3, true); //Cylinder joints
 
-
+	  HingeConstraint2->setLimit(-270, 0, 0.9f, 0.3f, 1.0f); //constraints
+	  app_scene->addHingeConstraint(HingeConstraint2);
 	  //HingeConstraint2->setDbgDrawSize(btScalar(5.0f));
 
 	  /*mat.loadIdentity();

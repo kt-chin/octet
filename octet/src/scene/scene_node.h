@@ -158,9 +158,14 @@ namespace octet { namespace scene {
       return calcModelToWorld().w().xyz();
     }
 
+	//void get_rotation()
+	//{
+	//return calcModelToWorld().rotateY();
+	//return nodeToParent().rotateY();
+	//}
 
-	////Get rotation of node in world space
-	//vec3 get_rotation() {
+	//Get rotation of node in world space
+	//vec3 get_rotationY() {
 	//	return calcModelToWorld().rotateY();
 	//}
 
@@ -304,6 +309,8 @@ namespace octet { namespace scene {
         trans.setBasis(get_btMatrix3x3(value));
         rigid_body->setWorldTransform(trans);
       }
+
+	 
 
       /// activate the rigid body. You must do this periodicaly if you want your object to stay awake (see fps example).
       void activate() {
