@@ -34,6 +34,8 @@ namespace octet {
 
 		}
 	};
+	//bullets
+	dynarray<scene_node> bullet_Node;
 
 	example_geometry_source source;
 
@@ -70,10 +72,16 @@ namespace octet {
       //mat.translate(-3, 1, 0);
       //app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
 
+	  //Hanging sign
+      mat.loadIdentity();
+      mat.translate(5, 15, 10);
+      scene_node *box_node = app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, false);
+	  btRigidBody *box_Rb = box_node->get_rigid_body();
 
-      //mat.loadIdentity();
-      //mat.translate(0, 1, 5);
-      //app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, true);
+	  mat.loadIdentity();
+	  mat.translate(5, 12, 10);
+	  scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2,2,2),2),green,false);
+	  btRigidBody *sphere_Rb = sphere_node->get_rigid_body();
 
       //First Door
       mat.loadIdentity();
@@ -98,7 +106,8 @@ namespace octet {
 
 	  //HingeConstraint->setDbgDrawSize(btScalar(5.0f));
 
-	  HingeConstraint->setLimit(160, 0,0.9f, 0.3f, 1.0f); //constraints
+	  HingeConstraint->setLimit(-60, 60);
+	  //HingeConstraint->setLimit(160, 0,0.9f, 0.3f, 1.0f); //constraints
 	  app_scene->addHingeConstraint(HingeConstraint);
 
 
@@ -122,7 +131,7 @@ namespace octet {
 	  //btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb1, *rb2, *anchor1, *anchor2, *axis1, *axis2, true);
 	  btHingeConstraint *HingeConstraint2 = new btHingeConstraint(*rb4, *rb3, *anchor4, *anchor3, *axis4, *axis3, true); //Cylinder joints
 
-	  HingeConstraint2->setLimit(-270, 0, 0.9f, 0.3f, 1.0f); //constraints
+	  HingeConstraint2->setLimit(60, -60); //constraints
 	  app_scene->addHingeConstraint(HingeConstraint2);
 	  //HingeConstraint2->setDbgDrawSize(btScalar(5.0f));
 
@@ -181,6 +190,7 @@ namespace octet {
 	  printf("\n");
 	  
 	  scene_node *camera_node = the_camera->get_node();
+
 
 	  mat4t &camera_to_world = camera_node->access_nodeToParent();
 	  

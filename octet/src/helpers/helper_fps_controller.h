@@ -50,6 +50,11 @@ namespace octet { namespace helpers {
 				player_node->apply_central_force(camera_node->get_y() * (+10000.0f));
 			}
 
+			//Fire button
+			if (the_app->is_key_down('E'))
+			{
+				printf("Fire!");
+			}
 		//Friction out since it correlates to the movement
         player_node->set_friction(friction);
 

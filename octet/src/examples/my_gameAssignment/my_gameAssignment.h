@@ -470,6 +470,7 @@ namespace octet {
 							mazeSprite.init(maze,col*0.245f, -currentLine * 0.245f, 0.245f, 0.245f);
 							mazeSprite.translate(-2.88f, 2.9f);
 							maze_sprites.push_back(mazeSprite);
+							
 						}
 						if (myStr == "1")
 						{
