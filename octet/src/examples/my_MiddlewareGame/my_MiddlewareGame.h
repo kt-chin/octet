@@ -86,7 +86,7 @@ namespace octet {
 	  btVector3 *anchor2 = new btVector3(-1.5f, 2, 0);
 
 	  btVector3 *axis1 = new btVector3(0, 1, 0);
-	  btVector3 *axis2 = new btVector3(1,0 , 0);
+	  btVector3 *axis2 = new btVector3(1, 0, 0);
 
 	  //btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb1, *rb2, *anchor1, *anchor2, *axis1, *axis2, true);
 	  btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb2, *rb1, *anchor2, *anchor1, *axis2, *axis1, true); //Cylinder joints
@@ -109,7 +109,7 @@ namespace octet {
 	  scene_node *node4 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.5f)), yellow, true);
 	  btRigidBody *rb4 = node4->get_rigid_body();
 
-	  btVector3 *anchor3 = new btVector3(1, 2, 0);
+	  btVector3 *anchor3 = new btVector3(15, 2, 0);
 	  btVector3 *anchor4 = new btVector3(1.5f, 2, 0);
 
 	  btVector3 *axis3 = new btVector3(0, 1, 0);
