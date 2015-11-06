@@ -304,6 +304,7 @@ namespace octet { namespace scene {
 	}
 	#endif
 
+
     /// helper to add a mesh to a scene and also to create the corresponding physics object
     scene_node *add_shape(mat4t_in mat, mesh *msh, material *mtl, bool is_dynamic=false, float mass=1, collison_shape_t *shape=NULL) {
       scene_node *node = new scene_node(this);

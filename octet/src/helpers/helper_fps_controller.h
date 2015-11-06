@@ -51,7 +51,7 @@ namespace octet { namespace helpers {
 			}
 
 			//Fire button
-			if (the_app->is_key_down('E'))
+			if (the_app->is_key_going_down('E'))
 			{
 				printf("Fire!");
 			}

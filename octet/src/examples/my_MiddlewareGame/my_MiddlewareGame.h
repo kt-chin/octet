@@ -9,6 +9,7 @@ namespace octet {
   class my_MiddlewareGame : public app {
     // scene for drawing box
     ref<visual_scene> app_scene;
+	//btDiscreteDynamicsWorld* world;
 
 	mouse_look mouse_look_helper;
 	helper_fps_controller fps_helper;
@@ -26,8 +27,6 @@ namespace octet {
 			vec3 p = bb_min + pos;
 			vec3 uv = uv_min + vec3((float)pos.x(), (float)pos.z(), 0) * uv_delta;
 			return mesh::vertex(p, vec3(0, 1, 0), uv); //made terrain flat thanks to Mircea
-
-				;
 
 			float dy_dx = std::cos(pos.x() * 0.01f);
 			float dy_dz = std::cos(pos.z() * 0.03f);
@@ -60,7 +59,7 @@ namespace octet {
 		the_camera = app_scene->get_camera_instance(0);
 		the_camera->get_node()->translate(vec3(0, 4, 0));
 		the_camera->set_far_plane(10000);
-
+		
       material *red = new material(vec4(1,  0, 0, 1));
       material *green = new material(vec4(0, 1, 0, 1));
       material *blue = new material(vec4(0,0, 1, 1));
@@ -69,19 +68,45 @@ namespace octet {
 
 
       mat4t mat;
-      //mat.translate(-3, 1, 0);
-      //app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
+      mat.translate(-3, 1, 0);
+      app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
 
 	  //Hanging sign
+	  //box
       mat.loadIdentity();
       mat.translate(5, 15, 10);
       scene_node *box_node = app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, false);
 	  btRigidBody *box_Rb = box_node->get_rigid_body();
-
+	  //sphere
 	  mat.loadIdentity();
 	  mat.translate(5, 12, 10);
-	  scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2,2,2),2),green,false);
+	  scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
 	  btRigidBody *sphere_Rb = sphere_node->get_rigid_body();
+
+	  //Spring constraint
+	  /*btTransform spring_ConstraintA, spring_ConstraintB; // FIX THIS!!!!!!
+	  spring_ConstraintA = btTransform::getIdentity();
+	  spring_ConstraintA.setOrigin(btVector3(btScalar(10.), btScalar(0.), btScalar(0.)));
+	  spring_ConstraintB = btTransform::getIdentity();
+	  spring_ConstraintB.setOrigin(btVector3(btScalar(0.), btScalar(0.), btScalar(0.)));
+
+	  btGeneric6DofSpringConstraint* pGen6DOFSpring = new btGeneric6DofSpringConstraint(*box_Rb, *sphere_Rb, spring_ConstraintA, spring_ConstraintB, true);
+	  pGen6DOFSpring->setLinearUpperLimit(btVector3(5., 0., 0.));
+	  pGen6DOFSpring->setLinearLowerLimit(btVector3(-5., 0., 0.));
+
+	  pGen6DOFSpring->setAngularLowerLimit(btVector3(0.f, 0.f, -2.5f));
+	  pGen6DOFSpring->setAngularUpperLimit(btVector3(0.f, 0.f, 2.5f));
+
+	  app_scene->addConstraint(pGen6DOFSpring, true);
+	  pGen6DOFSpring->setDbgDrawSize(btScalar(5.f));
+
+	  pGen6DOFSpring->enableSpring(0, true);
+	  pGen6DOFSpring->setStiffness(0, 39.478f);
+	  pGen6DOFSpring->setDamping(0, 0.5f);
+	  pGen6DOFSpring->enableSpring(5, true);
+	  pGen6DOFSpring->setStiffness(5, 39.478f);
+	  pGen6DOFSpring->setDamping(0, 0.3f);
+	  pGen6DOFSpring->setEquilibriumPoint();*/
 
       //First Door
       mat.loadIdentity();
@@ -186,8 +211,8 @@ namespace octet {
       get_viewport_size(vx, vy);
       app_scene->begin_render(vx, vy);
 
-	  printf("%f",player_node->get_position().y());
-	  printf("\n");
+	  //printf("%f",player_node->get_position().y());
+	  //printf("\n");
 	  
 	  scene_node *camera_node = the_camera->get_node();
 
