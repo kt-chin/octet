@@ -47,10 +47,11 @@ namespace octet {
 
     /// this is called once OpenGL is initialized
 
-	/*void get_Yrotation(float angle)
-	{
-		app_scene->rotate(angle)
-	}*/
+	//vec3 get_Position()
+	//{
+	//	return 
+	//}
+
 
     void app_init() {
 		mouse_look_helper.init(this, 200.0f / 360.0f, false);
@@ -72,42 +73,44 @@ namespace octet {
       mat.translate(-3, 1, 0);
       
 
-	  //Hanging sign
-	  //box
-      mat.loadIdentity();
-      mat.translate(0, 2, 15);
-      scene_node *box_node = app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, false);
-	  btRigidBody *box_Rb = box_node->get_rigid_body();
-	  //sphere
-	  mat.loadIdentity();
-	  mat.translate(5, 2, 15);
-	  scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
-	  btRigidBody *sphere_Rb = sphere_node->get_rigid_body();
+	  ////Hanging sign
+	  ////box
+   //   mat.loadIdentity();
+   //   mat.translate(0, 2, 15);
+   //   scene_node *box_node = app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, false);
+	  //btRigidBody *box_Rb = box_node->get_rigid_body();
+	  ////sphere
+	  //mat.loadIdentity();
+	  //mat.translate(5, 2, 15);
+	  //scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
+	  //btRigidBody *sphere_Rb = sphere_node->get_rigid_body();
 
-	  //Spring constraint
-	  btTransform spring_ConstraintA, spring_ConstraintB; // FIX THIS!!!!!!
-	  spring_ConstraintA = btTransform::getIdentity();
-	  spring_ConstraintA.setOrigin(btVector3(btScalar(2.5f), btScalar(0), btScalar(0)));
-	  spring_ConstraintB = btTransform::getIdentity();
-	  spring_ConstraintB.setOrigin(btVector3(btScalar(0), btScalar(0), btScalar(0)));
+	  ////Spring constraint
+	  //btTransform spring_ConstraintA, spring_ConstraintB;
+	  //spring_ConstraintA = btTransform::getIdentity();
+	  //spring_ConstraintA.setOrigin(btVector3(btScalar(2.5f), btScalar(0), btScalar(0)));
+	  //spring_ConstraintB = btTransform::getIdentity();
+	  //spring_ConstraintB.setOrigin(btVector3(btScalar(0), btScalar(0), btScalar(0)));
 
-	  btGeneric6DofSpringConstraint* pGen6DOFSpring = new btGeneric6DofSpringConstraint(*box_Rb, *sphere_Rb, spring_ConstraintA, spring_ConstraintB, true);
-	  pGen6DOFSpring->setLinearUpperLimit(btVector3(10., 0, 0.));
-	  pGen6DOFSpring->setLinearLowerLimit(btVector3(-10., 0, 0.));
+	  //btGeneric6DofSpringConstraint* pGen6DOFSpring = new btGeneric6DofSpringConstraint(*box_Rb, *sphere_Rb, spring_ConstraintA, spring_ConstraintB, true);
 
-	  pGen6DOFSpring->setAngularLowerLimit(btVector3(0.f, 0.f, 0.f));
-	  pGen6DOFSpring->setAngularUpperLimit(btVector3(10.f, 0.f, 0.f));
+	  ////Assigns position of spring
+	  //pGen6DOFSpring->setLinearUpperLimit(btVector3(40., 0, 0.));
+	  //pGen6DOFSpring->setLinearLowerLimit(btVector3(10., 0, 0.));
 
-	  app_scene->AddSpringConstraint(pGen6DOFSpring);
-	  //pGen6DOFSpring->setDbgDrawSize(btScalar(5.f));
+	  //pGen6DOFSpring->setAngularLowerLimit(btVector3(0.f, 0.f, 0.f));
+	  //pGen6DOFSpring->setAngularUpperLimit(btVector3(50.f, 0.f, 0.f));
 
-	  pGen6DOFSpring->enableSpring(0, true);
-	  pGen6DOFSpring->setStiffness(0, 15.0f);
-	  pGen6DOFSpring->setDamping(0, 0.5f);
-	  pGen6DOFSpring->enableSpring(5, true);
-	  pGen6DOFSpring->setStiffness(5, 15.0f);
-	  pGen6DOFSpring->setDamping(0, 0.3f);
-	  pGen6DOFSpring->setEquilibriumPoint();
+	  //app_scene->AddSpringConstraint(pGen6DOFSpring);
+	  ////pGen6DOFSpring->setDbgDrawSize(btScalar(5.f));
+
+	  //pGen6DOFSpring->enableSpring(0, true);
+	  //pGen6DOFSpring->setStiffness(0, 3.0f);
+	  //pGen6DOFSpring->setDamping(0, 0.5f);
+	  //pGen6DOFSpring->enableSpring(5, true);
+	  //pGen6DOFSpring->setStiffness(0, 3.0f);
+	  //pGen6DOFSpring->setDamping(0, 0.8f);
+	  //pGen6DOFSpring->setEquilibriumPoint();
 
       //First Door
       mat.loadIdentity();
@@ -120,20 +123,21 @@ namespace octet {
 	  scene_node *node2 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.2f)), yellow, true);
 	  btRigidBody *rb2 = node2->get_rigid_body();
 
-	  btVector3 *anchor1 = new btVector3(0.25f, 8, 0);
+	  btVector3 *anchor1 = new btVector3(2, 8, 0);
 	  btVector3 *anchor2 = new btVector3(-4, 4.0f, 0);
+	  /*btVector3 *anchor1 = new btVector3(2, 8, 0);
+	  btVector3 *anchor2 = new btVector3(-2, 4.0f, 0);*/ //Maybe?
+
 
 	  btVector3 *axis1 = new btVector3(0, 1, 0);
 	  btVector3 *axis2 = new btVector3(0, 1, 0);
 
-	  //btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb1, *rb2, *anchor1, *anchor2, *axis1, *axis2, true);
 	  btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb2, *rb1, *anchor2, *anchor1, *axis2, *axis1, true); //Cylinder joints
 
 
-	  //HingeConstraint->setDbgDrawSize(btScalar(5.0f));
 
 	  HingeConstraint->setLimit(-60, 60);
-	  //HingeConstraint->setLimit(160, 0,0.9f, 0.3f, 1.0f); //constraints
+
 	  app_scene->addHingeConstraint(HingeConstraint);
 
 
@@ -148,31 +152,19 @@ namespace octet {
 	  scene_node *node4 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.5f)), yellow, true);
 	  btRigidBody *rb4 = node4->get_rigid_body();
 
-	  btVector3 *anchor3 = new btVector3(-0.25f, 8, 0);
+	  btVector3 *anchor3 = new btVector3(2, 8, 0);
 	  btVector3 *anchor4 = new btVector3(4, 4.0f, 0);
+	  /*btVector3 *anchor1 = new btVector3(-2, 8, 0);
+	  btVector3 *anchor2 = new btVector3(2, 4.0f, 0);*/ //Maybe?
 
 	  btVector3 *axis3 = new btVector3(0, 1, 0);
 	  btVector3 *axis4 = new btVector3(0, 1, 0);
 
-	  //btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb1, *rb2, *anchor1, *anchor2, *axis1, *axis2, true);
 	  btHingeConstraint *HingeConstraint2 = new btHingeConstraint(*rb4, *rb3, *anchor4, *anchor3, *axis4, *axis3, true); //Cylinder joints
 
 	  HingeConstraint2->setLimit(60, -60); //constraints
 	  app_scene->addHingeConstraint(HingeConstraint2);
-	  //HingeConstraint2->setDbgDrawSize(btScalar(5.0f));
 
-	  /*mat.loadIdentity();
-	  mat.translate(2, 0, 0);
-	  app_scene->add_shape(mat, new mesh_box(vec3(1, 1, 1)), yellow, false);
-
-
-	  mat.loadIdentity();
-	  mat.translate(0, 2, 0);
-	  app_scene->add_shape(mat, new mesh_box(vec3(1, 1, 1)), yellow, false);
-
-	  mat.loadIdentity();
-	  mat.translate(0, 0, 5);
-	  app_scene->add_shape(mat, new mesh_box(vec3(1, 1, 1)), yellow, false);*/
 
 	  mat.loadIdentity();
 	  //mat.translate(0, -0.5f, 0);
@@ -218,14 +210,14 @@ namespace octet {
 	  scene_node *camera_node = the_camera->get_node();
 
 	  //Fire button
-	/*  if (the_app->is_key_going_down('E'))
+	  if (is_key_going_down('E'))
 	  {
 		  material *green = new material(vec4(0, 1, 0, 1));
 		  mat4t mat;
 		  mat.translate(-3, 1, 0);
 		  scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
 		  printf("Fire!");
-	  }*/
+	  }
 
 	  mat4t &camera_to_world = camera_node->access_nodeToParent();
 	  

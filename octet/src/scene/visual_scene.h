@@ -296,14 +296,14 @@ namespace octet { namespace scene {
       #endif
     }
 
-
+	//Create hinge constraint
 	#ifdef OCTET_BULLET
 	void addHingeConstraint(btHingeConstraint *constraint)
 	{
 		world->addConstraint(constraint);
 	}
 	#endif
-	
+	//create spring constraint
 	#ifdef OCTET_BULLET
 	void AddSpringConstraint(btGeneric6DofConstraint *constraint)
 	{
