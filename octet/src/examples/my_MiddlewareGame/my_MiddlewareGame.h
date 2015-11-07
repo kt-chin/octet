@@ -125,8 +125,8 @@ namespace octet {
 
 	  /*btVector3 *anchor1 = new btVector3(2, 8, 0);
 	  btVector3 *anchor2 = new btVector3(-4, 4.0f, 0);*/
-	  btVector3 *anchor1 = new btVector3(2, 8, 0);
-	  btVector3 *anchor2 = new btVector3(-2, 3.5f, 0); //Maybe?
+	  btVector3 *anchor1 = new btVector3(0.8f, 8, 0);
+	  btVector3 *anchor2 = new btVector3(-4, 4.0f, 0); //Maybe?
 
 
 	  btVector3 *axis1 = new btVector3(0, 1, 0);
@@ -136,33 +136,33 @@ namespace octet {
 
 
 
-	  HingeConstraint->setLimit(-90, 90,0.9f, 0.3f, 1.0f);
+	  HingeConstraint->setLimit(-90, 90, 2.0f, 2.0f, 1.0f);
 
 	  app_scene->addHingeConstraint(HingeConstraint);
 
 
 	  // Second Door
 	  mat.loadIdentity();
-	  mat.translate(16, 0, 10);
+	  mat.translate(17.5f, 0, 10);
 	  scene_node *node3 = app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 4, 0), 0.5f, 4)), blue, false);
 	  btRigidBody *rb3 = node3->get_rigid_body();
 
 	  mat.loadIdentity();
-	  mat.translate(12, 4, 10);
-	  scene_node *node4 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.5f)), yellow, true);
+	  mat.translate(13.5f, 4, 10);
+	  scene_node *node4 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.2f)), yellow, true);
 	  btRigidBody *rb4 = node4->get_rigid_body();
 
 	  /*btVector3 *anchor3 = new btVector3(2, 8, 0);
 	  btVector3 *anchor4 = new btVector3(4, 4.0f, 0);*/
-	  btVector3 *anchor3 = new btVector3(-2, 8, 0);
-	  btVector3 *anchor4 = new btVector3(2,3.5f, 0); //Maybe?
+	  btVector3 *anchor3 = new btVector3(-0.8f, 8, 0);
+	  btVector3 *anchor4 = new btVector3(4,4, 0); //Maybe?
 
 	  btVector3 *axis3 = new btVector3(0, 1, 0);
 	  btVector3 *axis4 = new btVector3(0, 1, 0);
 
 	  btHingeConstraint *HingeConstraint2 = new btHingeConstraint(*rb4, *rb3, *anchor4, *anchor3, *axis4, *axis3, true); //Cylinder joints
 
-	  HingeConstraint2->setLimit(-60, 60,0.9f, 0.3f,2.0f); //constraints
+	  HingeConstraint2->setLimit(-90, 90,2.0f, 2.0f,1.0f); //constraints
 	  app_scene->addHingeConstraint(HingeConstraint2);
 
 
