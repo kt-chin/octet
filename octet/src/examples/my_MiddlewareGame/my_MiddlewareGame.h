@@ -73,44 +73,44 @@ namespace octet {
       mat.translate(-3, 1, 0);
       
 
-	  ////Hanging sign
-	  ////box
-   //   mat.loadIdentity();
-   //   mat.translate(0, 2, 15);
-   //   scene_node *box_node = app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, false);
-	  //btRigidBody *box_Rb = box_node->get_rigid_body();
-	  ////sphere
-	  //mat.loadIdentity();
-	  //mat.translate(5, 2, 15);
-	  //scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
-	  //btRigidBody *sphere_Rb = sphere_node->get_rigid_body();
+	  //Hanging sign
+	  //box
+      mat.loadIdentity();
+      mat.translate(0, 2, 40);
+      scene_node *box_node = app_scene->add_shape(mat, new mesh_box(vec3(2, 2, 2)), red, false);
+	  btRigidBody *box_Rb = box_node->get_rigid_body();
+	  //sphere
+	  mat.loadIdentity();
+	  mat.translate(5, 2, 40);
+	  scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
+	  btRigidBody *sphere_Rb = sphere_node->get_rigid_body();
 
-	  ////Spring constraint
-	  //btTransform spring_ConstraintA, spring_ConstraintB;
-	  //spring_ConstraintA = btTransform::getIdentity();
-	  //spring_ConstraintA.setOrigin(btVector3(btScalar(2.5f), btScalar(0), btScalar(0)));
-	  //spring_ConstraintB = btTransform::getIdentity();
-	  //spring_ConstraintB.setOrigin(btVector3(btScalar(0), btScalar(0), btScalar(0)));
+	  //Spring constraint
+	  btTransform spring_ConstraintA, spring_ConstraintB;
+	  spring_ConstraintA = btTransform::getIdentity();
+	  spring_ConstraintA.setOrigin(btVector3(btScalar(2.5f), btScalar(0), btScalar(0)));
+	  spring_ConstraintB = btTransform::getIdentity();
+	  spring_ConstraintB.setOrigin(btVector3(btScalar(0), btScalar(0), btScalar(0)));
 
-	  //btGeneric6DofSpringConstraint* pGen6DOFSpring = new btGeneric6DofSpringConstraint(*box_Rb, *sphere_Rb, spring_ConstraintA, spring_ConstraintB, true);
+	  btGeneric6DofSpringConstraint* pGen6DOFSpring = new btGeneric6DofSpringConstraint(*box_Rb, *sphere_Rb, spring_ConstraintA, spring_ConstraintB, true);
 
-	  ////Assigns position of spring
-	  //pGen6DOFSpring->setLinearUpperLimit(btVector3(40., 0, 0.));
-	  //pGen6DOFSpring->setLinearLowerLimit(btVector3(10., 0, 0.));
+	  //Assigns position of spring
+	  pGen6DOFSpring->setLinearUpperLimit(btVector3(40., 0, 0.));
+	  pGen6DOFSpring->setLinearLowerLimit(btVector3(10., 0, 0.));
 
-	  //pGen6DOFSpring->setAngularLowerLimit(btVector3(0.f, 0.f, 0.f));
-	  //pGen6DOFSpring->setAngularUpperLimit(btVector3(50.f, 0.f, 0.f));
+	  pGen6DOFSpring->setAngularLowerLimit(btVector3(0.f, 0.f, 0.f));
+	  pGen6DOFSpring->setAngularUpperLimit(btVector3(50.f, 0.f, 0.f));
 
-	  //app_scene->AddSpringConstraint(pGen6DOFSpring);
-	  ////pGen6DOFSpring->setDbgDrawSize(btScalar(5.f));
+	  app_scene->AddSpringConstraint(pGen6DOFSpring);
+	  //pGen6DOFSpring->setDbgDrawSize(btScalar(5.f));
 
-	  //pGen6DOFSpring->enableSpring(0, true);
-	  //pGen6DOFSpring->setStiffness(0, 3.0f);
-	  //pGen6DOFSpring->setDamping(0, 0.5f);
-	  //pGen6DOFSpring->enableSpring(5, true);
-	  //pGen6DOFSpring->setStiffness(0, 3.0f);
-	  //pGen6DOFSpring->setDamping(0, 0.8f);
-	  //pGen6DOFSpring->setEquilibriumPoint();
+	  pGen6DOFSpring->enableSpring(0, true);
+	  pGen6DOFSpring->setStiffness(0, 3.0f);
+	  pGen6DOFSpring->setDamping(0, 0.5f);
+	  pGen6DOFSpring->enableSpring(5, true);
+	  pGen6DOFSpring->setStiffness(0, 3.0f);
+	  pGen6DOFSpring->setDamping(0, 0.8f);
+	  pGen6DOFSpring->setEquilibriumPoint();
 
       //First Door
       mat.loadIdentity();

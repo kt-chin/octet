@@ -1,69 +1,44 @@
-//////////////////////////////////////////////////////////////////////////////////
-////
-//// (C) Andy Thomason 2012-2014
-////
-//// Modular Framework for OpenGLES2 rendering on multiple platforms.
-////
-//// Single texture shader with no lighting
-//
-//namespace octet {
-//	namespace shaders {
-//		class intro_Shader : public shader {
-//			// indices to use with glUniform*()
-//
-//			// index for model space to projection space matrix
-//			GLuint modelToProjectionIndex_;
-//
-//		public:
-//
-//
-//			void init() {
-//				// this is the vertex shader.
-//				// it is called for each corner of each triangle
-//				// it inputs pos and uv from each corner
-//				// it outputs gl_Position and uv_ to the rasterizer
-//				const char vertex_shader[] = SHADER_STR(
-//					varying vec2 uv_;
-//
-//				attribute vec4 pos;
-//
-//				uniform mat4 modelToProjection;
-//
-//				void main() { gl_Position = modelToProjection * pos; uv_ = uv; }
-//				);
-//
-//				// this is the fragment shader
-//				// after the rasterizer breaks the triangle into fragments
-//				// this is called for every fragment
-//				// it outputs gl_FragColor, the color of the pixel and inputs uv_
-//				const char fragment_shader[] = SHADER_STR(
-//					varying vec2 uv_;
-//				uniform sampler2D sampler;
-//				void main()
-//				{
-//					vec4 textureCol = texture2D(sampler, uv_);
-//					vec4 color = vec4(1, 0, 0, 1);
-//					gl_FragColor = textureCol * color;
-//				}
-//				);
-//
-//				// use the common shader code to compile and link the shaders
-//				// the result is a shader program
-//				shader::init(vertex_shader, fragment_shader);
-//
-//				// extract the indices of the uniforms to use later
-//				modelToProjectionIndex_ = glGetUniformLocation(program(), "modelToProjection");
-//				samplerIndex_ = glGetUniformLocation(program(), "sampler");
-//			}
-//
-//			void render(const mat4t &modelToProjection, int sampler) {
-//				// tell openGL to use the program
-//				shader::render();
-//
-//				// customize the program with uniforms
-//				glUniform1i(samplerIndex_, sampler);
-//				glUniformMatrix4fv(modelToProjectionIndex_, 1, GL_FALSE, modelToProjection.get());
-//			}
-//		};
-//	}
-//}
+namespace octet {
+	namespace shaders {
+		class intro_Shader : public shader {
+			GLuint modelToProjectionIndex_;
+			GLuint resolutionIndex_;
+
+		public:
+			void init() {
+
+				const char vertex_shader[] = SHADER_STR(
+
+					attribute vec4 pos;
+				uniform mat4 modelToProjection;
+
+				void main() {
+					gl_Position = modelToProjection * pos;
+				}
+				);
+
+				const char fragment_shader[] = SHADER_STR(
+
+					uniform vec2 resolution;
+
+				void main() {
+					vec2 pos = gl_FragCoord.xy / resolution.xy;
+					vec3 vColor = vec3(0.209, 0.66, 0.38) * (1 - pos.y);
+					gl_FragColor = vec4(vColor, 1.0);
+				}
+				);
+
+				shader::init(vertex_shader, fragment_shader);
+
+				modelToProjectionIndex_ = glGetUniformLocation(program(), "modelToProjection");
+				resolutionIndex_ = glGetUniformLocation(program(), "resolution");
+			}
+
+			void render(const mat4t &modelToProjection, const vec2 &resolution) {
+				shader::render();
+				glUniform2fv(resolutionIndex_, 1, resolution.get());
+				glUniformMatrix4fv(modelToProjectionIndex_, 1, GL_FALSE, modelToProjection.get());
+			}
+		};
+	}
+}
