@@ -203,6 +203,7 @@ namespace octet {
 
     }
 
+	//CSV file
 	void csv_Generate()
 	{
 		std::ifstream is("../../../assets/wall_Border.csv");
@@ -218,7 +219,7 @@ namespace octet {
 		while (!is.eof()) {
 			is.getline(buffer, sizeof(buffer));
 			vec3 pos;
-			//vec3_in rotate
+			float rotate;
 			
 			char object_type = 0;
 
@@ -241,7 +242,7 @@ namespace octet {
 					pos.z() = atof(b);
 				}
 				else if (col == 4) {
-					
+
 				}
 
 				if (*e != ',') break;
@@ -287,6 +288,11 @@ namespace octet {
 	  //Fire button
 	  if (is_key_going_down('E'))
 	  {
+
+		  /*scene_node * cam_node = the_camera->get_node();
+		  mesh_instance* ball = app->add_sphere(cam_node->get_position() + cam_node->get_z() * -10.0f);
+		  ball->get_node()->apply_central_force(cam_node->get_z() * -1000.0f);*/
+
 		  vec3 pos = player_node->get_position();
 		  material *green = new material(vec4(0, 1, 0, 1));
 		  mat4t mat;
