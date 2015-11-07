@@ -9,7 +9,12 @@ namespace octet {
   class my_MiddlewareGame : public app {
     // scene for drawing box
     ref<visual_scene> app_scene;
-	//btDiscreteDynamicsWorld* world;
+
+	ref<material> red;
+	ref<material> blue;
+	ref<material> yellow;
+	ref<material> green;
+	ref<material> pink;
 
 	mouse_look mouse_look_helper;
 	helper_fps_controller fps_helper;
@@ -47,11 +52,6 @@ namespace octet {
 
     /// this is called once OpenGL is initialized
 
-	//vec3 get_Position()
-	//{
-	//	return 
-	//}
-
 
     void app_init() {
 		mouse_look_helper.init(this, 200.0f / 360.0f, false);
@@ -61,17 +61,74 @@ namespace octet {
 		the_camera = app_scene->get_camera_instance(0);
 		the_camera->get_node()->translate(vec3(0, 4, 0));
 		the_camera->set_far_plane(10000);
-		
-      material *red = new material(vec4(1,  0, 0, 1));
-      material *green = new material(vec4(0, 1, 0, 1));
-      material *blue = new material(vec4(0,0, 1, 1));
-	  material *yellow = new material(vec4(1, 0.165f, 0));
+		//app_scene = new visual_scene();
+
+
+      red = new material(vec4(1,  0, 0, 1));
+      green = new material(vec4(0, 1, 0, 1));
+	  blue = new material(vec4(0, 0, 1, 1));
+	  yellow = new material(vec4(1, 0.165, 0));
+	  pink = new material(vec4(199, 0, 172));
 
 
 
       mat4t mat;
-      mat.translate(-3, 1, 0);
+     // mat.translate(-3, 1, 0);
       
+
+	  //First Door
+	  mat.loadIdentity();
+	  mat.translate(0, 0, 10);
+	  scene_node *node1 = app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 4, 0), 0.5f, 4)), blue, false);
+	  btRigidBody *rb1 = node1->get_rigid_body();
+
+	  mat.loadIdentity();
+	  mat.translate(4, 4.5f, 10);
+	  scene_node *node2 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.2f)), yellow, true);
+	  btRigidBody *rb2 = node2->get_rigid_body();
+
+	  /*btVector3 *anchor1 = new btVector3(2, 8, 0);
+	  btVector3 *anchor2 = new btVector3(-4, 4.0f, 0);*/
+	  btVector3 *anchor1 = new btVector3(0.8f, 8, 0);
+	  btVector3 *anchor2 = new btVector3(-4, 4.0f, 0); //Maybe?
+
+
+	  btVector3 *axis1 = new btVector3(0, 1, 0);
+	  btVector3 *axis2 = new btVector3(0, 1, 0);
+
+	  btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb2, *rb1, *anchor2, *anchor1, *axis2, *axis1, true); //Cylinder joints
+
+
+
+	  HingeConstraint->setLimit(-90, 90, 2.0f, 2.0f, 1.0f);
+
+	  app_scene->addHingeConstraint(HingeConstraint);
+
+
+	  // Second Door
+	  mat.loadIdentity();
+	  mat.translate(17.5f, 0, 10);
+	  scene_node *node3 = app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 4, 0), 0.5f, 4)), blue, false);
+	  btRigidBody *rb3 = node3->get_rigid_body();
+
+	  mat.loadIdentity();
+	  mat.translate(13.5f, 4, 10);
+	  scene_node *node4 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.2f)), yellow, true);
+	  btRigidBody *rb4 = node4->get_rigid_body();
+
+	  /*btVector3 *anchor3 = new btVector3(2, 8, 0);
+	  btVector3 *anchor4 = new btVector3(4, 4.0f, 0);*/
+	  btVector3 *anchor3 = new btVector3(-0.8f, 8, 0);
+	  btVector3 *anchor4 = new btVector3(4, 4, 0); //Maybe?
+
+	  btVector3 *axis3 = new btVector3(0, 1, 0);
+	  btVector3 *axis4 = new btVector3(0, 1, 0);
+
+	  btHingeConstraint *HingeConstraint2 = new btHingeConstraint(*rb4, *rb3, *anchor4, *anchor3, *axis4, *axis3, true); //Cylinder joints
+
+	  HingeConstraint2->setLimit(-90, 90, 2.0f, 2.0f, 1.0f); //constraints
+	  app_scene->addHingeConstraint(HingeConstraint2);
+
 
 	  //Hanging sign
 	  //box
@@ -112,63 +169,11 @@ namespace octet {
 	  pGen6DOFSpring->setDamping(0, 0.8f);
 	  pGen6DOFSpring->setEquilibriumPoint();
 
-      //First Door
-      mat.loadIdentity();
-	  mat.translate(0, 0, 10);
-      scene_node *node1 = app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 4, 0), 0.5f, 4)), blue, false);
-	  btRigidBody *rb1 = node1->get_rigid_body();
-	  
-	  mat.loadIdentity();
-	  mat.translate(4,4.5f,10);
-	  scene_node *node2 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.2f)), yellow, true);
-	  btRigidBody *rb2 = node2->get_rigid_body();
-
-	  /*btVector3 *anchor1 = new btVector3(2, 8, 0);
-	  btVector3 *anchor2 = new btVector3(-4, 4.0f, 0);*/
-	  btVector3 *anchor1 = new btVector3(0.8f, 8, 0);
-	  btVector3 *anchor2 = new btVector3(-4, 4.0f, 0); //Maybe?
-
-
-	  btVector3 *axis1 = new btVector3(0, 1, 0);
-	  btVector3 *axis2 = new btVector3(0, 1, 0);
-
-	  btHingeConstraint *HingeConstraint = new btHingeConstraint(*rb2, *rb1, *anchor2, *anchor1, *axis2, *axis1, true); //Cylinder joints
-
-
-
-	  HingeConstraint->setLimit(-90, 90, 2.0f, 2.0f, 1.0f);
-
-	  app_scene->addHingeConstraint(HingeConstraint);
-
-
-	  // Second Door
-	  mat.loadIdentity();
-	  mat.translate(17.5f, 0, 10);
-	  scene_node *node3 = app_scene->add_shape(mat, new mesh_cylinder(zcylinder(vec3(0, 4, 0), 0.5f, 4)), blue, false);
-	  btRigidBody *rb3 = node3->get_rigid_body();
-
-	  mat.loadIdentity();
-	  mat.translate(13.5f, 4, 10);
-	  scene_node *node4 = app_scene->add_shape(mat, new mesh_box(vec3(4, 4, 0.2f)), yellow, true);
-	  btRigidBody *rb4 = node4->get_rigid_body();
-
-	  /*btVector3 *anchor3 = new btVector3(2, 8, 0);
-	  btVector3 *anchor4 = new btVector3(4, 4.0f, 0);*/
-	  btVector3 *anchor3 = new btVector3(-0.8f, 8, 0);
-	  btVector3 *anchor4 = new btVector3(4,4, 0); //Maybe?
-
-	  btVector3 *axis3 = new btVector3(0, 1, 0);
-	  btVector3 *axis4 = new btVector3(0, 1, 0);
-
-	  btHingeConstraint *HingeConstraint2 = new btHingeConstraint(*rb4, *rb3, *anchor4, *anchor3, *axis4, *axis3, true); //Cylinder joints
-
-	  HingeConstraint2->setLimit(-90, 90,2.0f, 2.0f,1.0f); //constraints
-	  app_scene->addHingeConstraint(HingeConstraint2);
+	  csv_Generate();
 
 
 	  mat.loadIdentity();
-	  //mat.translate(0, -0.5f, 0);
-	  
+
 
 
       // ground
@@ -198,23 +203,94 @@ namespace octet {
 
     }
 
+	void csv_Generate()
+	{
+		std::ifstream is("../../../assets/wall_Border.csv");
+		if (is.bad())
+		{
+			printf("Error opening csv file\n");
+			return;
+		}
+		// store the line here
+		char buffer[2048];
+
+		// loop over lines
+		while (!is.eof()) {
+			is.getline(buffer, sizeof(buffer));
+			vec3 pos;
+			//vec3_in rotate
+			
+			char object_type = 0;
+
+			// loop over columns
+			char *b = buffer;
+			for (int col = 0;; ++col) {
+				char *e = b;
+				while (*e != 0 && *e != ',') ++e;
+
+				if (col == 0) {
+					object_type = b[0];
+				}
+				else if (col == 1) {
+					pos.x() = atof(b);
+				}
+				else if (col == 2) {
+					pos.y() = atof(b);
+				}
+				else if (col == 3) {
+					pos.z() = atof(b);
+				}
+				else if (col == 4) {
+					
+				}
+
+				if (*e != ',') break;
+				b = e + 1;
+			}
+			// line ended
+			add_object(object_type, pos);
+		}
+	}
+	public:
+
+		scene_node* add_object(char type, vec3 pos)
+		{
+			if (type == 'a')
+			{
+				return add_wall(pos);
+			}
+			/*else if(type == 'b')
+			{
+				return add_wall(pos);
+			}*/
+		}
+		scene_node* add_wall(vec3 pos)
+		{
+			mat4t position;
+			position.translate(pos);
+
+			mesh_box *box = new mesh_box(vec3(1000,100,0), position);
+
+			scene_node* box_instance = app_scene->add_shape(position, box, pink, false);
+
+			return box_instance;
+		}
     /// this is called to draw the world
     void draw_world(int x, int y, int w, int h) {
       int vx = 0, vy = 0;
       get_viewport_size(vx, vy);
       app_scene->begin_render(vx, vy);
-
-	  //printf("%f",player_node->get_position().y());
-	  //printf("\n");
-	  
+	  printf("%f", player_node->get_position().y());
+	  printf("\n");
 	  scene_node *camera_node = the_camera->get_node();
 
 	  //Fire button
 	  if (is_key_going_down('E'))
 	  {
+		  vec3 pos = player_node->get_position();
 		  material *green = new material(vec4(0, 1, 0, 1));
 		  mat4t mat;
-		  mat.translate(-3, 1, 0);
+		  mat.translate(pos);
 		  scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
 		  printf("Fire!");
 	  }

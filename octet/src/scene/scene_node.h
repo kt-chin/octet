@@ -158,17 +158,6 @@ namespace octet { namespace scene {
       return calcModelToWorld().w().xyz();
     }
 
-	//void get_rotation()
-	//{
-	//return calcModelToWorld().rotateY();
-	//return nodeToParent().rotateY();
-	//}
-
-	//Get rotation of node in world space
-	//vec3 get_rotationY() {
-	//	return calcModelToWorld().rotateY();
-	//}
-
     /// get enabled state
     bool get_enabled() const {
       return enabled;
@@ -302,6 +291,8 @@ namespace octet { namespace scene {
         trans.setOrigin(get_btVector3(value));
         rigid_body->setWorldTransform(trans);
       }
+
+	 
 
       /// brute force tranform set: warning, this may break something!
       void set_rotation(mat4t_in value) {

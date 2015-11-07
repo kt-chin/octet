@@ -482,9 +482,6 @@ namespace octet {
 							portal_sprites.push_back(portalSprite);
 
 						}
-					
-					
-
 
 
 					if (*e != ',') break;
