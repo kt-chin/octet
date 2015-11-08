@@ -1,9 +1,3 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// (C) Andy Thomason 2012-2014
-//
-// Modular Framework for OpenGLES2 rendering on multiple platforms.
-//
 namespace octet {
   /// Scene containing a box with octet.
   class my_MiddlewareGame : public app {
@@ -14,7 +8,7 @@ namespace octet {
 	ref<material> blue;
 	ref<material> yellow;
 	ref<material> green;
-	ref<material> pink;
+	ref<material> purple;
 	ref<material> orange;
 
 	mouse_look mouse_look_helper;
@@ -65,7 +59,7 @@ namespace octet {
       green = new material(vec4(0, 1, 0, 1));
 	  blue = new material(vec4(0, 0, 1, 1));
 	  yellow = new material(vec4(1,1, 0,1));
-	  pink = new material(vec4(1, 0.411f, 0.705f,1));
+	  purple = new material(vec4(0.6f, 0.0f, 0.6f,1));
 	  orange = new material(vec4(1, 0.27f, 0, 1));
       mat4t mat;
      // mat.translate(-3, 1, 0);
@@ -234,9 +228,6 @@ namespace octet {
 				else if (col == 3) {
 					pos.z() = atof(b);
 				}
-				/*else if (col == 4) {
-					rot.rotate(atof(b));
-				}*/
 
 				if (*e != ',') break;
 				b = e + 1;
@@ -265,7 +256,7 @@ namespace octet {
 
 			mesh_box *box = new mesh_box(vec3(1000,100,0), position);
 
-			scene_node* box_instance = app_scene->add_shape(position, box, pink, false);
+			scene_node* box_instance = app_scene->add_shape(position, box, purple, false);
 
 			return box_instance;
 		}
@@ -276,7 +267,7 @@ namespace octet {
 
 			mesh_box *box = new mesh_box(vec3(0, 100, 1000), position);
 
-			scene_node* box_instance = app_scene->add_shape(position, box, pink, false);
+			scene_node* box_instance = app_scene->add_shape(position, box, purple, false);
 
 			return box_instance;
 		}
@@ -300,13 +291,9 @@ namespace octet {
 	  if (is_key_going_down('E'))
 	  {
 		  mat4t mat;
-		  /*my_MiddlewareGame* app = (my_MiddlewareGame *)data;*/
-		  vec3 pos = (player_node->get_position().z()) * camera_to_world;// THIS WORKS
+		  vec3 pos = (player_node->get_position().z()) * camera_to_world;
 		  scene_node * cam_node = the_camera->get_node();
-		  //vec3 pos = (player_node->get_position() + cam_node->get_z() * -10.0f)* camera_to_world;
-		  
 		  mat.translate(pos);
-		 
 		  scene_node * box = app_scene->add_shape(mat, new mesh_box(vec3(1, 1, 1)), orange, true);
 		  
 		  box->translate(pos);
