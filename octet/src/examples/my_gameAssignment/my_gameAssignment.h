@@ -15,8 +15,11 @@ namespace octet {
 		// true if this sprite is enabled.
 		bool enabled;
 
+		
+
 	public:
 		mat4t modelToWorld;
+
 
 		vec2 get_pos() {
 			return modelToWorld.row(3).xy();
@@ -92,6 +95,7 @@ namespace octet {
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 		}
 
+
 		// move the object
 		void translate(float x, float y) {
 			modelToWorld.translate(x, y, 0);
@@ -140,6 +144,7 @@ namespace octet {
 
 		// shader to draw a textured triangle
 		texture_shader texture_shader_;
+		//my_Shader my_Shader_;
 
 		enum {
 			num_sound_sources = 8,
@@ -174,6 +179,7 @@ namespace octet {
 			num_sprites,
 
 		};
+		vec4 background_Colour;
 
 		// timers for missiles and bombs
 		int missiles_disabled;
@@ -323,6 +329,7 @@ namespace octet {
 				sprite &bomb = sprites[first_bomb_sprite + i];
 				bomb.translate(0, -bomb_speed);
 				if (bomb.collides_with(sprites[ship_sprite])) {
+
 					bomb.is_enabled() = false;
 					bomb.translate(20, 0);
 					bombs_disabled = 50;
@@ -407,6 +414,9 @@ namespace octet {
 		void app_init() {
 			// set up the shader
 			texture_shader_.init();
+			//my_Shader_.init();
+
+			background_Colour = vec4(0.4f, 0.8f, 0.1f, 1.0f);
 			// set up the matrices with a camera 5 units from the origin
 			cameraToWorld.loadIdentity();
 			cameraToWorld.translate(0, 0, 3);
@@ -622,7 +632,7 @@ namespace octet {
 			}
 
 			char score_text[32];
-			sprintf(score_text, "score: %d   lives: %d\n", score, num_lives);
+			//sprintf(score_text, "score: %d   lives: %d\n", score, num_lives);
 			draw_text(texture_shader_, -1.75f, 2, 1.0f / 256, score_text);
 
 			// move the listener with the camera
