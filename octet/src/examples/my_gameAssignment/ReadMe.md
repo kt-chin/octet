@@ -1,3 +1,13 @@
+#Introduction to Programming
+
+###Controls
+
+####Left and Right Arrow Key -> Rotate
+
+####Forward and Back Arrow Key -> Move forwards and back
+
+####Objective: Reach the stars!
+
 In the invaderers game, the objective is to navigate through the maze towards the portal whilst  avoiding enemies that come barreling down along the y axis shooting at the player. Movement controls are similar to old asteroids games, where left and right rotates the player, and forward and back moves the player respectively. 
 
 The first thing to do was to create a method that handled rotation (Thanks to Raul):
@@ -55,4 +65,4 @@ This is simply altering the colour to more gold-like, where the RGB values (afte
 
 I would have liked more time to work on both the shader and the gameplay (Blinking player and portal, and enemies shoot upwards if the player was above the enemies, as well as collision between the player and enemy) however, due to my lack of experience in C++ and Octet, I felt I was wasting a lot more time trying to understand aspects of how the code and framework worked in conjunction with one another.
 
-![Alt text](https://github.com/kt-chin/octet/blob/master/octet/src/examples/my_gameAssignment/Screenshot.png?raw=true"Screenshot of Game")
+![Alt text](https://github.com/kt-chin/octet/blob/master/octet/assets/Screenshot.png?raw=true"Screenshot of Game")
