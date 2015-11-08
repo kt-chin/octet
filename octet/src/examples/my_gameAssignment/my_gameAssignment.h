@@ -9,6 +9,7 @@ namespace octet {
 		// half the height of the sprite
 		float halfHeight;
 
+		
 		// what texture is on our sprite
 		int texture;
 
@@ -91,7 +92,81 @@ namespace octet {
 			// finally, draw the sprite (4 vertices)
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 		}
+		void render(my_Shader &shader, mat4t &cameraToWorld, int v_width, int v_height) {
+			mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
+			shader.render(modelToProjection, vec2(v_width, v_height));
 
+			float vertices[] = {
+				-halfWidth, -halfHeight, 0,
+				halfWidth, -halfHeight, 0,
+				halfWidth, halfHeight, 0,
+				-halfWidth, halfHeight, 0,
+			};
+
+			glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)vertices);
+			glEnableVertexAttribArray(attribute_pos);
+
+			static const float uvs[] = {
+				0, 0,
+				1, 0,
+				1, 1,
+				0, 1,
+			};
+
+			glVertexAttribPointer(attribute_uv, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)uvs);
+			glEnableVertexAttribArray(attribute_uv);
+
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		}
+		void render(portal_Shader &shader, mat4t &cameraToWorld) {
+			// invisible sprite... used for gameplay.
+			if (!texture) return;
+
+			// build a projection matrix: model -> world -> camera -> projection
+			// the projection space is the cube -1 <= x/w, y/w, z/w <= 1
+			mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
+
+			// set up opengl to draw textured triangles using sampler 0 (GL_TEXTURE0)
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture);
+
+			// use "old skool" rendering
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			shader.render(modelToProjection, 0);
+
+			// this is an array of the positions of the corners of the sprite in 3D
+			// a straight "float" here means this array is being generated here at runtime.
+			float vertices[] = {
+				-halfWidth, -halfHeight, 0,
+				halfWidth, -halfHeight, 0,
+				halfWidth,  halfHeight, 0,
+				-halfWidth,  halfHeight, 0,
+			};
+
+			// attribute_pos (=0) is position of each corner
+			// each corner has 3 floats (x, y, z)
+			// there is no gap between the 3 floats and hence the stride is 3*sizeof(float)
+			glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)vertices);
+			glEnableVertexAttribArray(attribute_pos);
+
+			// this is an array of the positions of the corners of the texture in 2D
+			static const float uvs[] = {
+				0,  0,
+				1,  0,
+				1,  1,
+				0,  1,
+			};
+
+			// attribute_uv is position in the texture of each corner
+			// each corner (vertex) has 2 floats (x, y)
+			// there is no gap between the 2 floats and hence the stride is 2*sizeof(float)
+			glVertexAttribPointer(attribute_uv, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)uvs);
+			glEnableVertexAttribArray(attribute_uv);
+
+			// finally, draw the sprite (4 vertices)
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		}
 		// move the object
 		void translate(float x, float y) {
 			modelToWorld.translate(x, y, 0);
@@ -140,7 +215,8 @@ namespace octet {
 
 		// shader to draw a textured triangle
 		texture_shader texture_shader_;
-
+		my_Shader my_Shader_;
+		portal_Shader portal_Shader_;
 		enum {
 			num_sound_sources = 8,
 			num_rows = 1,
@@ -199,6 +275,8 @@ namespace octet {
 		// big array of sprites
 		sprite sprites[num_sprites];
 
+		sprite background_Sprite;	
+
 		// random number generator
 		class random randomizer;
 
@@ -226,6 +304,8 @@ namespace octet {
 				sprites[game_over_sprite].translate(-20, 0);
 			}
 		}*/
+		vec4 portal_Colour;
+
 		dynarray<sprite> maze_sprites; // thanks to Raul
 		dynarray<sprite> portal_sprites;
 		// called when we are hit
@@ -256,11 +336,6 @@ namespace octet {
 				sprites[ship_sprite].translate(0, +ship_speed);
 				for (int i = 0; i < maze_sprites.size(); i++) {
 					if (sprites[ship_sprite].collides_with(maze_sprites[i]))
-						/*sprites[ship_sprite].collides_with(sprites[first_border_sprite]) ||
-						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 1]) ||
-						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 2]) ||
-						sprites[ship_sprite].collides_with(sprites[first_border_sprite + 3]) ||
-						sprites[ship_sprite].collides_with(sprites[maze_sprite])*/
 					{
 						sprites[ship_sprite].translate(0, -ship_speed);
 						std::cout << "Collision Happened" << std::endl;
@@ -323,11 +398,14 @@ namespace octet {
 				sprite &bomb = sprites[first_bomb_sprite + i];
 				bomb.translate(0, -bomb_speed);
 				if (bomb.collides_with(sprites[ship_sprite])) {
-					bomb.is_enabled() = false;
-					bomb.translate(20, 0);
-					bombs_disabled = 50;
-					on_hit_ship();
-					goto next_bomb;
+
+						bomb.is_enabled() = false;
+						bomb.translate(20, 0);
+						bombs_disabled = 50;
+						on_hit_ship();
+						portal_Colour = vec4(0, 1, 0,1 );
+						goto next_bomb;
+					
 				}
 				if (bomb.get_pos().y() < -3) {
 					bomb.is_enabled() = false;
@@ -407,6 +485,8 @@ namespace octet {
 		void app_init() {
 			// set up the shader
 			texture_shader_.init();
+			my_Shader_.init();
+			portal_Shader_.init();
 			// set up the matrices with a camera 5 units from the origin
 			cameraToWorld.loadIdentity();
 			cameraToWorld.translate(0, 0, 3);
@@ -498,9 +578,9 @@ namespace octet {
 
 			// set the border to white for clarity
 			GLuint white = resource_dict::get_texture_handle(GL_RGB, "#ffffff");
-			//GLuint red = resource_dict::get_texture_handle(GL_RGB, "#ff0000");
+			GLuint red = resource_dict::get_texture_handle(GL_RGB, "#ff0000");
 			GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
-
+			background_Sprite.init(red, 0, 0, 6, 6);
 			/*sprites[first_border_sprite + 0].init(white, 0, -3, 6, 0.2f);
 			sprites[first_border_sprite + 1].init(white, 0, 3, 6, 0.2f);
 			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
@@ -606,6 +686,9 @@ namespace octet {
 			// allow alpha blend (transparency when alpha channel is 0)
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+			//Background
+			background_Sprite.render(my_Shader_, cameraToWorld, w, h);
 
 			// draw all the sprites
 			for (int i = 0; i != num_sprites; ++i) {
