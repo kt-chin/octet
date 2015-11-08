@@ -67,8 +67,8 @@ namespace octet {
       red = new material(vec4(1,  0, 0, 1));
       green = new material(vec4(0, 1, 0, 1));
 	  blue = new material(vec4(0, 0, 1, 1));
-	  yellow = new material(vec4(1, 0.165, 0));
-	  pink = new material(vec4(199, 0, 172));
+	  yellow = new material(vec4(1,1, 0,1));
+	  pink = new material(vec4(1, 0.411f, 0.705f,1));
 
 
 
@@ -210,7 +210,7 @@ namespace octet {
 		if (is.bad())
 		{
 			printf("Error opening csv file\n");
-			return;
+			return;																																													
 		}
 		// store the line here
 		char buffer[2048];
@@ -219,7 +219,8 @@ namespace octet {
 		while (!is.eof()) {
 			is.getline(buffer, sizeof(buffer));
 			vec3 pos;
-			float rotate;
+			mat4t rot;
+			//float rotate;
 			
 			char object_type = 0;
 
@@ -241,9 +242,9 @@ namespace octet {
 				else if (col == 3) {
 					pos.z() = atof(b);
 				}
-				else if (col == 4) {
-
-				}
+				/*else if (col == 4) {
+					rot.rotate(atof(b));
+				}*/
 
 				if (*e != ',') break;
 				b = e + 1;
@@ -281,34 +282,41 @@ namespace octet {
       int vx = 0, vy = 0;
       get_viewport_size(vx, vy);
       app_scene->begin_render(vx, vy);
-	  printf("%f", player_node->get_position().y());
-	  printf("\n");
+
 	  scene_node *camera_node = the_camera->get_node();
-
-	  //Fire button
-	  if (is_key_going_down('E'))
-	  {
-
-		  /*scene_node * cam_node = the_camera->get_node();
-		  mesh_instance* ball = app->add_sphere(cam_node->get_position() + cam_node->get_z() * -10.0f);
-		  ball->get_node()->apply_central_force(cam_node->get_z() * -1000.0f);*/
-
-		  vec3 pos = player_node->get_position();
-		  material *green = new material(vec4(0, 1, 0, 1));
-		  mat4t mat;
-		  mat.translate(pos);
-		  scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);
-		  printf("Fire!");
-	  }
-
 	  mat4t &camera_to_world = camera_node->access_nodeToParent();
-	  
 	  mouse_look_helper.update(camera_to_world);
 	  mouse_look_helper.set_invert_mouse(true); //Inverted as workaround from rotation.
 	  //Rotates player camera
 	 camera_node->rotate(180.0f, vec3(0, 1, 0));
 	 player_node->rotate(180.0f, vec3(0, 1, 0));
 	 fps_helper.update(player_node, camera_node);
+	  //Fire button
+	  if (is_key_going_down('E'))
+	  {
+		  mat4t mat;
+		  /*my_MiddlewareGame* app = (my_MiddlewareGame *)data;*/
+		  vec3 pos = (player_node->get_position() * 10.0f);// + camera_node->get_z() * -10.0f)*camera_to_world;
+		  scene_node * cam_node = the_camera->get_node();
+		  scene_node * box = app_scene->add_shape(mat, new mesh_box(vec3(1, 1, 1)), red, true);
+		  box->translate(pos);
+		  box->get_scene_node()->apply_central_force(cam_node->get_z() *-8000.0f);
+		  printf("%f", player_node->get_position());
+		  printf("\n");
+		  //ball->get_scene_node()->apply_central_force(the_camera->get_node()->get_y() * -100.0f);
+		 // box->get_node()->apply_central_force(cam_node->get_z() * -1000.0f);
+
+		  /*vec3 pos = player_node->get_position();
+		  material *green = new material(vec4(0, 1, 0, 1));
+		  mat4t mat;
+		  mat.translate(pos);
+		  scene_node *sphere_node = app_scene->add_shape(mat, new mesh_sphere(vec3(2, 2, 2), 2), green, true);*/
+		  printf("Fire!");
+	  }
+
+	
+	  
+	  
 	 
 	 
 
