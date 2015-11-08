@@ -55,4 +55,4 @@ This is simply altering the colour to more gold-like, where the RGB values (afte
 
 I would have liked more time to work on both the shader and the gameplay (Blinking player and portal, and enemies shoot upwards if the player was above the enemies, as well as collision between the player and enemy) however, due to my lack of experience in C++ and Octet, I felt I was wasting a lot more time trying to understand aspects of how the code and framework worked in conjunction with one another.
 
-
+![Alt text](https://github.com/kt-chin/octet/blob/master/octet/src/examples/my_gameAssignment/Screenshot.png?raw=true"Screenshot of Game")
