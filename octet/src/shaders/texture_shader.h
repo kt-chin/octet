@@ -6,60 +6,65 @@
 //
 // Single texture shader with no lighting
 
-namespace octet {
-	namespace shaders {
-		class texture_shader : public shader {
-			// indices to use with glUniform*()
+namespace octet { namespace shaders {
+  class texture_shader : public shader {
+    // indices to use with glUniform*()
 
-			// index for model space to projection space matrix
-			GLuint modelToProjectionIndex_;
+    // index for model space to projection space matrix
+    GLuint modelToProjectionIndex_;
 
-			// index for texture sampler
-			GLuint samplerIndex_;
-		public:
-			void init() {
-				// this is the vertex shader.
-				// it is called for each corner of each triangle
-				// it inputs pos and uv from each corner
-				// it outputs gl_Position and uv_ to the rasterizer
-				const char vertex_shader[] = SHADER_STR(
-					varying vec2 uv_;
+    // index for texture sampler
+    GLuint samplerIndex_;
+  public:
 
-				attribute vec4 pos;
-				attribute vec2 uv;
 
-				uniform mat4 modelToProjection;
+    void init() {
+      // this is the vertex shader.
+      // it is called for each corner of each triangle
+      // it inputs pos and uv from each corner
+      // it outputs gl_Position and uv_ to the rasterizer
+      const char vertex_shader[] = SHADER_STR(
+        varying vec2 uv_;
 
-				void main() { gl_Position = modelToProjection * pos; uv_ = uv; }
-				);
+        attribute vec4 pos;
+        attribute vec2 uv;
 
-				// this is the fragment shader
-				// after the rasterizer breaks the triangle into fragments
-				// this is called for every fragment
-				// it outputs gl_FragColor, the color of the pixel and inputs uv_
-				const char fragment_shader[] = SHADER_STR(
-					varying vec2 uv_;
-				uniform sampler2D sampler;
-				void main() { gl_FragColor = texture2D(sampler, uv_); }
-				);
+        uniform mat4 modelToProjection;
 
-				// use the common shader code to compile and link the shaders
-				// the result is a shader program
-				shader::init(vertex_shader, fragment_shader);
+        void main() { gl_Position = modelToProjection * pos; uv_ = uv; }
+      );
 
-				// extract the indices of the uniforms to use later
-				modelToProjectionIndex_ = glGetUniformLocation(program(), "modelToProjection");
-				samplerIndex_ = glGetUniformLocation(program(), "sampler");
-			}
+      // this is the fragment shader
+      // after the rasterizer breaks the triangle into fragments
+      // this is called for every fragment
+      // it outputs gl_FragColor, the color of the pixel and inputs uv_
+      const char fragment_shader[] = SHADER_STR(
+        varying vec2 uv_;
+        uniform sampler2D sampler;
+        void main() 
+		{ 
+			vec4 textureCol = texture2D(sampler, uv_);
+			vec4 color = vec4(1, 0, 0, 1);
+			gl_FragColor = textureCol * color;
+		}
+      );
+    
+      // use the common shader code to compile and link the shaders
+      // the result is a shader program
+      shader::init(vertex_shader, fragment_shader);
 
-			void render(const mat4t &modelToProjection, int sampler) {
-				// tell openGL to use the program
-				shader::render();
+      // extract the indices of the uniforms to use later
+      modelToProjectionIndex_ = glGetUniformLocation(program(), "modelToProjection");
+      samplerIndex_ = glGetUniformLocation(program(), "sampler");
+    }
 
-				// customize the program with uniforms
-				glUniform1i(samplerIndex_, sampler);
-				glUniformMatrix4fv(modelToProjectionIndex_, 1, GL_FALSE, modelToProjection.get());
-			}
-		};
-	}
-}
+    void render(const mat4t &modelToProjection, int sampler) {
+      // tell openGL to use the program
+      shader::render();
+
+      // customize the program with uniforms
+      glUniform1i(samplerIndex_, sampler);
+      glUniformMatrix4fv(modelToProjectionIndex_, 1, GL_FALSE, modelToProjection.get());
+    }
+  };
+}}
