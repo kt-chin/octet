@@ -330,8 +330,7 @@ namespace octet {
 				for (int i = 0; i < maze_sprites.size(); i++) {
 					if (sprites[ship_sprite].collides_with(maze_sprites[i]))
 					{
-						sprites[ship_sprite].translate(0, -ship_speed);
-						std::cout << "Collision Happened" << std::endl;
+						sprites[ship_sprite].translate(0, -ship_speed);						
 					}
 				}
 			}
@@ -343,7 +342,6 @@ namespace octet {
 					if (sprites[ship_sprite].collides_with(maze_sprites[i]))
 					{
 						sprites[ship_sprite].translate(0, +ship_speed);
-						std::cout << "Collision Happened" << std::endl;
 					}
 				}
 			}
@@ -467,7 +465,7 @@ namespace octet {
 			font_texture = resource_dict::get_texture_handle(GL_RGBA, "assets/big_0.gif");
 
 			GLuint ship = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/theShip.gif");
-			sprites[ship_sprite].init(ship, 2.7f, -2.70f, 0.25f, 0.25);
+			sprites[ship_sprite].init(ship, 2.755f, -2.70f, 0.25f, 0.25);
 			sprites[ship_sprite].rotateMatrix(90);
 
 			GLuint GameOver = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/GameOver.gif");
@@ -513,7 +511,7 @@ namespace octet {
 					// now b -> e contains the chars in a column
 					
 						borders.emplace_back(csv_buffer, e);
-						std::string myStr = std::string(csv_buffer); //Convert to string, then back to int , thanks to Jean-Pascal
+						std::string myStr = std::string(csv_buffer); //Convert to string, thanks to Jean-Pascal
 						myStr = myStr.substr(0, myStr.find(','));
 
 						if (myStr == "0")
@@ -527,7 +525,6 @@ namespace octet {
 						if (myStr == "1")
 						{
 							GLuint portal = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/portal.gif");
-							std::cout << "Portal SPAWN" << std::endl;
 							sprite portalSprite;
 							portalSprite.init(portal, col*0.2f, currentLine * 0.2f, 0.2f, 0.2f);
 							portalSprite.translate(-2.8f, 1.5f);
