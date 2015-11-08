@@ -43,81 +43,6 @@ namespace octet {
 			enabled = true;
 		}
 
-		void render(texture_shader &shader, mat4t &cameraToWorld) {
-			// invisible sprite... used for gameplay.
-			if (!texture) return;
-
-			// build a projection matrix: model -> world -> camera -> projection
-			// the projection space is the cube -1 <= x/w, y/w, z/w <= 1
-			mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
-
-			// set up opengl to draw textured triangles using sampler 0 (GL_TEXTURE0)
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, texture);
-
-			// use "old skool" rendering
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
-			//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-			shader.render(modelToProjection, 0);
-
-			// this is an array of the positions of the corners of the sprite in 3D
-			// a straight "float" here means this array is being generated here at runtime.
-			float vertices[] = {
-				-halfWidth, -halfHeight, 0,
-				halfWidth, -halfHeight, 0,
-				halfWidth,  halfHeight, 0,
-				-halfWidth,  halfHeight, 0,
-			};
-
-			// attribute_pos (=0) is position of each corner
-			// each corner has 3 floats (x, y, z)
-			// there is no gap between the 3 floats and hence the stride is 3*sizeof(float)
-			glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)vertices);
-			glEnableVertexAttribArray(attribute_pos);
-
-			// this is an array of the positions of the corners of the texture in 2D
-			static const float uvs[] = {
-				0,  0,
-				1,  0,
-				1,  1,
-				0,  1,
-			};
-
-			// attribute_uv is position in the texture of each corner
-			// each corner (vertex) has 2 floats (x, y)
-			// there is no gap between the 2 floats and hence the stride is 2*sizeof(float)
-			glVertexAttribPointer(attribute_uv, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)uvs);
-			glEnableVertexAttribArray(attribute_uv);
-
-			// finally, draw the sprite (4 vertices)
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-		}
-		void render(my_Shader &shader, mat4t &cameraToWorld, int v_width, int v_height) {
-			mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
-			shader.render(modelToProjection, vec2(v_width, v_height));
-
-			float vertices[] = {
-				-halfWidth, -halfHeight, 0,
-				halfWidth, -halfHeight, 0,
-				halfWidth, halfHeight, 0,
-				-halfWidth, halfHeight, 0,
-			};
-
-			glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)vertices);
-			glEnableVertexAttribArray(attribute_pos);
-
-			static const float uvs[] = {
-				0, 0,
-				1, 0,
-				1, 1,
-				0, 1,
-			};
-
-			glVertexAttribPointer(attribute_uv, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)uvs);
-			glEnableVertexAttribArray(attribute_uv);
-
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
-		}
 		void render(portal_Shader &shader, mat4t &cameraToWorld) {
 			// invisible sprite... used for gameplay.
 			if (!texture) return;
@@ -167,25 +92,112 @@ namespace octet {
 			// finally, draw the sprite (4 vertices)
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 		}
-		// move the object
+		void render(texture_shader &shader, mat4t &cameraToWorld) {
+			if (!texture) return;
+
+			mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture);
+
+			shader.render(modelToProjection, 0);
+
+			float vertices[] = {
+				-halfWidth, -halfHeight, 0,
+				halfWidth, -halfHeight, 0,
+				halfWidth,  halfHeight, 0,
+				-halfWidth,  halfHeight, 0,
+			};
+
+			glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)vertices);
+			glEnableVertexAttribArray(attribute_pos);
+
+			static const float uvs[] = {
+				0,  0,
+				1,  0,
+				1,  1,
+				0,  1,
+			};
+
+			glVertexAttribPointer(attribute_uv, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)uvs);
+			glEnableVertexAttribArray(attribute_uv);
+
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		}
+
+		void render(my_Shader &shader, mat4t &cameraToWorld, int v_width, int v_height) {
+			mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
+			shader.render(modelToProjection, vec2(v_width, v_height));
+
+			float vertices[] = {
+				-halfWidth, -halfHeight, 0,
+				halfWidth, -halfHeight, 0,
+				halfWidth, halfHeight, 0,
+				-halfWidth, halfHeight, 0,
+			};
+
+			glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)vertices);
+			glEnableVertexAttribArray(attribute_pos);
+
+			static const float uvs[] = {
+				0, 0,
+				1, 0,
+				1, 1,
+				0, 1,
+			};
+
+			glVertexAttribPointer(attribute_uv, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)uvs);
+			glEnableVertexAttribArray(attribute_uv);
+
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		}
+		void render(my_Shader &shader, mat4t &cameraToWorld) {
+
+			if (!texture) return;
+
+			mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, texture);
+
+			shader.render(modelToProjection, 0);
+
+			float vertices[] = {
+				-halfWidth, -halfHeight, 0,
+				halfWidth, -halfHeight, 0,
+				halfWidth,  halfHeight, 0,
+				-halfWidth,  halfHeight, 0,
+			};
+
+			glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)vertices);
+			glEnableVertexAttribArray(attribute_pos);
+
+			static const float uvs[] = {
+				0,  0,
+				1,  0,
+				1,  1,
+				0,  1,
+			};
+
+			glVertexAttribPointer(attribute_uv, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)uvs);
+			glEnableVertexAttribArray(attribute_uv);
+
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+		}
+
 		void translate(float x, float y) {
 			modelToWorld.translate(x, y, 0);
 		}
 
-		// position the object relative to another.
 		void set_relative(sprite &rhs, float x, float y) {
 			modelToWorld = rhs.modelToWorld;
 			modelToWorld.translate(x, y, 0);
 		}
 
-		// return true if this sprite collides with another.
-		// note the "const"s which say we do not modify either sprite
 		bool collides_with(const sprite &rhs) const {
 			float dx = rhs.modelToWorld[3][0] - modelToWorld[3][0];
 			float dy = rhs.modelToWorld[3][1] - modelToWorld[3][1];
 
-			// both distances have to be under the sum of the halfwidths
-			// for a collision
 			return
 				(fabsf(dx) < halfWidth + rhs.halfWidth) &&
 				(fabsf(dy) < halfHeight + rhs.halfHeight)
@@ -199,9 +211,6 @@ namespace octet {
 				(fabsf(dx) < halfWidth + margin)
 				;
 		}
-		/*bool is_below(const sprite &rhs, float margin) const {
-			float dx = rhs.modelToWorld[0][3]
-		}*/
 
 		bool &is_enabled() {
 			return enabled;
@@ -288,22 +297,6 @@ namespace octet {
 
 		ALuint get_sound_source() { return sources[cur_source++ % num_sound_sources]; }
 
-		// called when we hit an enemy
-		/*void on_hit_invaderer() {
-			ALuint source = get_sound_source();
-			alSourcei(source, AL_BUFFER, bang);
-			alSourcePlay(source);
-
-			live_invaderers--;
-			score++;
-			if (live_invaderers == 4) {
-				invader_velocity *= 4;
-			}
-			else if (live_invaderers == 0) {
-				game_over = true;
-				sprites[game_over_sprite].translate(-20, 0);
-			}
-		}*/
 		vec4 portal_Colour;
 
 		dynarray<sprite> maze_sprites; // thanks to Raul
@@ -426,31 +419,12 @@ namespace octet {
 			}
 		}
 
-		// check if any invaders hit the sides.
-/*		bool invaders_collide(sprite &border) {
-			for (int j = 0; j != num_invaderers; ++j) {
-				sprite &invaderer = sprites[first_invaderer_sprite + j];
-				if (invaderer.is_enabled() && invaderer.collides_with(border)) {
-					return true;
-				}
-			}
-			return false;
-		}*/
-
-
 		void draw_text(texture_shader &shader, float x, float y, float scale, const char *text) {
 			mat4t modelToWorld;
 			modelToWorld.loadIdentity();
 			modelToWorld.translate(x, y, 0);
 			modelToWorld.scale(scale, scale, 1);
 			mat4t modelToProjection = mat4t::build_projection_matrix(modelToWorld, cameraToWorld);
-
-			/*mat4t tmp;
-			glLoadIdentity();
-			glTranslatef(x, y, 0);
-			glGetFloatv(GL_MODELVIEW_MATRIX, (float*)&tmp);
-			glScalef(scale, scale, 1);
-			glGetFloatv(GL_MODELVIEW_MATRIX, (float*)&tmp);*/
 
 			enum { max_quads = 32 };
 			bitmap_font::vertex vertices[max_quads * 4];
@@ -479,7 +453,6 @@ namespace octet {
 		// this is called when we construct the class
 		my_gameAssignment(int argc, char **argv) : app(argc, argv), font(512, 256, "assets/big.fnt") {
 		}
-
 
 		// this is called once OpenGL is initialized
 		void app_init() {
@@ -513,7 +486,7 @@ namespace octet {
 			}
 
 
-			//read CSV file    Thanks to Andy Thomason and jean-pascal Evette
+			//read CSV file
 			std::vector<std::string> borders;
 			//std::vector<int> score;
 			std::ifstream is("../../../assets/invaderers/Maze2.0.csv");
@@ -540,10 +513,8 @@ namespace octet {
 					// now b -> e contains the chars in a column
 					
 						borders.emplace_back(csv_buffer, e);
-						std::string myStr = std::string(csv_buffer);
+						std::string myStr = std::string(csv_buffer); //Convert to string, then back to int , thanks to Jean-Pascal
 						myStr = myStr.substr(0, myStr.find(','));
-						
-						//std::cout << "(" << currentLine << "," << col << ") =" << myStr.c_str() <<"\n";
 
 						if (myStr == "0")
 						{
@@ -563,10 +534,6 @@ namespace octet {
 							portal_sprites.push_back(portalSprite);
 
 						}
-					
-					
-
-
 
 					if (*e != ',') break;
 					csv_buffer = e + 1;
@@ -581,12 +548,6 @@ namespace octet {
 			GLuint red = resource_dict::get_texture_handle(GL_RGB, "#ff0000");
 			GLuint maze = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/mazewall.gif");
 			background_Sprite.init(red, 0, 0, 6, 6);
-			/*sprites[first_border_sprite + 0].init(white, 0, -3, 6, 0.2f);
-			sprites[first_border_sprite + 1].init(white, 0, 3, 6, 0.2f);
-			sprites[first_border_sprite + 2].init(white, -3, 0, 0.2f, 6);
-			sprites[first_border_sprite + 3].init(white, 3, 0, 0.2f, 6);*/
-
-
 
 			// use the bomb texture
 			GLuint bomb = resource_dict::get_texture_handle(GL_RGBA, "assets/invaderers/bomb.gif");
@@ -618,7 +579,6 @@ namespace octet {
 				return;
 			}
 
-
 			sprite &ship = sprites[ship_sprite];
 			sprite &portal = sprites[portal_sprite];
 			sprite &border = sprites[first_border_sprite + (invader_velocity < 0 ? 2 : 3)];
@@ -633,10 +593,7 @@ namespace octet {
 					sprites[game_over_sprite].translate(-20, 0);
 				}
 			}
-			//int timer_count = 0;
-			//++timer_count;
-			//printf("%d \n", timer_count);
-			
+
 			move_ship();
 
 			fire_bombs();
@@ -645,8 +602,7 @@ namespace octet {
 
 			move_invaders(0, -invader_velocity);
 
-			
-
+		
 			if (invaderer.get_pos().y() < -3)
 			{
 				for (int j = 0; j != num_rows; ++j) {
@@ -657,16 +613,6 @@ namespace octet {
 					}
 				}
 			}
-		
-	
-		
-	
-		//	sprites[first_invaderer_sprite]invaderer.translate(0, 20);
-	
-	//if (invaders_collide(border)) {
-		//invader_velocity = -invader_velocity;
-		//move_invaders(invader_velocity, -0.1f);
-//}
 }
 
 		// this is called to draw the world
@@ -701,7 +647,7 @@ namespace octet {
 			}
 			for (int i = 0; i < portal_sprites.size(); i++)
 			{
-				portal_sprites[i].render(texture_shader_, cameraToWorld);
+				portal_sprites[i].render(portal_Shader_, cameraToWorld);
 			}
 
 			char score_text[32];

@@ -45,7 +45,7 @@ namespace octet {
 				void main()
 				{
 					vec4 textureCol = texture2D(sampler, uv_);
-					vec4 color = vec4(1, 0, 0, 1);
+					vec4 color = vec4(1, 0.843f, 0, 1);
 					gl_FragColor = textureCol * color;
 				}
 				);
