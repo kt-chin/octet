@@ -28,7 +28,7 @@ namespace octet { namespace helpers {
         player_node->clamp_linear_velocity(10);
 
 		//Player movement (commented out since we wont need it)
-        float friction = 0.0f;
+       /* float friction = 0.0f;
         if (the_app->is_key_down('A')) {
           player_node->activate();
           player_node->apply_central_force(camera_node->get_x() * (-1000.0f));
@@ -43,7 +43,7 @@ namespace octet { namespace helpers {
           player_node->apply_central_force(camera_node->get_z() * (+1000.0f));
         } else {
           friction = 7.0f;
-        }
+        }*/
 
 		
 
@@ -54,7 +54,7 @@ namespace octet { namespace helpers {
 
 			
 		//Friction out since it correlates to the movement
-        player_node->set_friction(friction);
+       // player_node->set_friction(friction);
 
         mat4t &camera_to_world = camera_node->access_nodeToParent();
         camera_to_world.w() = (player_node->get_position() + vec3(0, 1.25f , 0) ).xyz1();

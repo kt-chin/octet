@@ -285,6 +285,7 @@ namespace octet { namespace scene {
         solver = new btSequentialImpulseConstraintSolver();
         world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, &config);
       #endif
+
     }
 
     ~visual_scene() {
@@ -348,6 +349,8 @@ namespace octet { namespace scene {
       #endif
 		return node;
     }
+
+		
 
     /// Serialization
     void visit(visitor &v) {
@@ -671,6 +674,7 @@ namespace octet { namespace scene {
         debug_line_buffer[debug_in_ptr++ & debug_line_buffer.size()-1] = end;
       }
     }
+
   };
 }}
 
