@@ -8,13 +8,15 @@ namespace octet {
   /// Scene containing a box with octet.
   class L_Systems : public app {
     // scene for drawing box
-	  ref<material> green;
-	  ref<material> brown;
+	ref<material> green;
+	ref<material> brown;
     ref<visual_scene> app_scene;
   public:
     /// this is called when we construct the class before everything is initialised.
     L_Systems(int argc, char **argv) : app(argc, argv) {
     }
+
+	float branch_length = 0.1;
 
     /// this is called once OpenGL is initialized
     void app_init() {
@@ -22,12 +24,12 @@ namespace octet {
       app_scene->create_default_camera_and_lights();
 	  green = new material(vec4(0, 1, 0, 1));
 	  brown = new material(vec4(0.87f, 0.72f, 0.52f, 1));
-	  draw_Log(vec3(4,5,0));
+	  draw_Log(vec3(0,0,0));
     }
 
 	void draw_Log(vec3(pos))
 	{
-		mesh_box *box = new mesh_box(vec3(1, 4, 0));
+		mesh_box *box = new mesh_box(vec3(0.2f, 4, 0));
 		scene_node *node = new scene_node();
 		node->translate(pos);
 		app_scene->add_child(node);
