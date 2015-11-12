@@ -1,28 +1,27 @@
-////////////////////////////////////////////////////////////////////////////////
-//
-// (C) Andy Thomason 2012-2014
-//
-// Modular Framework for OpenGLES2 rendering on multiple platforms.
-//
 namespace octet {
-  /// Scene containing a box with octet.
+
   class L_Systems : public app {
     // scene for drawing box
 	  ref<material> green;
 	  ref<material> brown;
-    ref<visual_scene> app_scene;
+	  ref<visual_scene> app_scene;
   public:
-    /// this is called when we construct the class before everything is initialised.
+    // this is called when we construct the class before everything is initialised.
     L_Systems(int argc, char **argv) : app(argc, argv) {
     }
 
-    /// this is called once OpenGL is initialized
+
+
+    // this is called once OpenGL is initialized
     void app_init() {
       app_scene =  new visual_scene();
       app_scene->create_default_camera_and_lights();
 	  green = new material(vec4(0, 1, 0, 1));
 	  brown = new material(vec4(0.87f, 0.72f, 0.52f, 1));
+	  //float pos_X = ((rectScreen))
+
 	  draw_Log(vec3(4,5,0));
+	
     }
 
 	void draw_Log(vec3(pos))
@@ -34,7 +33,16 @@ namespace octet {
 		app_scene->add_mesh_instance(new mesh_instance(node, box, brown));
 	}
 
-    /// this is called to draw the world
+	void draw_line()
+	{
+		glClearColor(0, 0, 0, 1); //Clears background colour to black
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glBegin(GL_LINES);
+		glColor3f(0.87f, 0.72f, 0.52f);
+
+	}
+
+    // this is called to draw the world
     void draw_world(int x, int y, int w, int h) {
       int vx = 0, vy = 0;
       get_viewport_size(vx, vy);
