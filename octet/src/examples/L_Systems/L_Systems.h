@@ -10,7 +10,7 @@ namespace octet {
 	  ref<material> brown;
 	  ref<visual_scene> app_scene;
 	  float branch_Length = 0.1f;
-	  float angle = 45.0f;
+	  float angle;
 	  vec2 start_Pos;
 	  vec2 current_Pos;
 	  vec2 current_Dir;
@@ -120,8 +120,6 @@ namespace octet {
 			}
 		}
 
-		printf("Axiom %s\n", axiom);
-		printf("Rules: \n");
 
 		for (int j = 0; j < rules.size(); j++) {
 			printf("%s\n", rules[j]);
