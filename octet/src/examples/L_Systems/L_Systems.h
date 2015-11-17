@@ -21,7 +21,6 @@ namespace octet {
 	  dynarray<vec2> point_State;
 	  dynarray<vec2> direction_State;
 	  int iteration_Count;
-	  L_Systems trees;
   public:
     // this is called when we construct the class before everything is initialised.
     L_Systems(int argc, char **argv) : app(argc, argv) {
