@@ -17,10 +17,12 @@ namespace octet {
 	  vec2 current_Angle;
 	  string axiom;
 	  dynarray<string> rules;
+	  dynarray<string> tree_Files;
 	  dynarray<vec2> point_Node;
 	  dynarray<vec2> point_State;
 	  dynarray<vec2> direction_State;
 	  int iteration_Count;
+	  int tree_Example;
 	  
   public:
     // this is called when we construct the class before everything is initialised.
@@ -39,8 +41,8 @@ namespace octet {
 	green = new material(vec4(0, 1, 0, 1));
 	brown = new material(vec4(0.87f, 0.72f, 0.52f, 1));
 
-	string rules = ("../../../assets/Tree1.csv");
-	string rules = ("../../../assets/Tree2.csv");
+	tree_Files.push_back("../../../assets/Tree1.csv");
+	tree_Files.push_back("../../../assets/Tree2.csv");
 	  //float pos_X = ((rectScreen))
 
 	  //draw_Log(vec3(4,5,0));
@@ -178,6 +180,27 @@ namespace octet {
 		}
 	}
 
+	void hotkey_Controls()
+	{
+	
+		if (is_key_down(key_right))
+		{
+			iteration_Count++;
+		}
+		if (is_key_down(key_up))
+		{
+			tree_Example++;
+
+		}
+		if (is_key_down(key_left))
+		{
+			tree_Example--;
+		}
+		if (is_key_down(key_down))
+		{
+			iteration_Count--;
+		}
+	}
 
 
     // this is called to draw the world
