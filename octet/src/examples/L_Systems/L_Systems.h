@@ -21,6 +21,7 @@ namespace octet {
 	  dynarray<vec2> point_State;
 	  dynarray<vec2> direction_State;
 	  int iteration_Count;
+	  
   public:
     // this is called when we construct the class before everything is initialised.
     L_Systems(int argc, char **argv) : app(argc, argv) {
@@ -38,6 +39,8 @@ namespace octet {
 	green = new material(vec4(0, 1, 0, 1));
 	brown = new material(vec4(0.87f, 0.72f, 0.52f, 1));
 
+	string rules = ("../../../assets/Tree1.csv");
+	string rules = ("../../../assets/Tree2.csv");
 	  //float pos_X = ((rectScreen))
 
 	  //draw_Log(vec3(4,5,0));
@@ -92,30 +95,30 @@ namespace octet {
 		point_State.reset();
 		direction_State.reset();
 
-		int line_num = 0;
+		int col = 0;
 		while (!file.eof())
 		{
 			file.getline(buffer, sizeof(buffer));
 
-			if (buffer[0] != '/')
+			if (buffer[0] != ',')
 			{
-				if (line_num == 0)
+				if (col == 0)
 				{
 					axiom = buffer;
 				}
-				else if (line_num == 1)
+				else if (col == 1)
 				{
 					iteration_Count = atoi(buffer);
 				}
-				else if (line_num == 2)
+				else if (col == 2)
 				{
 					angle = atof(buffer);
 				}
-				else if (line_num >= 3)
+				else if (col >= 3)
 				{
 					rules.push_back(buffer);
 				}
-				++line_num;
+				++col;
 			}
 		}
 
