@@ -3,110 +3,94 @@
 
 namespace octet {
 
-  class L_Systems : public app {
-    // scene for drawing box
+	class L_Systems : public app {
+		// scene for drawing box
 
-	  ref<material> green;
-	  ref<material> brown;
-	  ref<visual_scene> app_scene;
-	  float branch_Length = 0.1f;
-	  float angle;
-	  vec2 start_Pos;
-	  vec2 current_Pos;
-	  vec2 current_Dir;
-	  vec2 current_Angle;
-	  string axiom;
-	  dynarray<string> rules;
-	  dynarray<string> tree_Files;
-	  dynarray<vec2> point_Node;
-	  dynarray<vec2> point_State;
-	  dynarray<vec2> direction_State;
-	  int iteration_Count;
-	  int tree_Example;
-	  
-  public:
-    // this is called when we construct the class before everything is initialised.
-    L_Systems(int argc, char **argv) : app(argc, argv) {
+		ref<material> green;
+		ref<material> brown;
+		ref<visual_scene> app_scene;
+		float branch_Length = 0.1f;
+		float angle;
+		vec2 start_Pos;
+		vec2 current_Pos;
+		vec2 current_Dir;
+		vec2 current_Angle;
+		string axiom;
+		dynarray<string> rules;
+		dynarray<string> tree_Files;
+		dynarray<vec2> point_Node;
+		dynarray<vec2> point_State;
+		dynarray<vec2> direction_State;
+		int iteration_Count;
+		int tree_Example;
 
-    }
+	public:
+		// this is called when we construct the class before everything is initialised.
+		L_Systems(int argc, char **argv) : app(argc, argv) {
 
-
-    // this is called once OpenGL is initialized
-    void app_init() {
-	start_Pos = vec2(0, -1);
-	current_Pos = start_Pos;
-	current_Angle = 0.0f;
-    app_scene =  new visual_scene();
-    app_scene->create_default_camera_and_lights();
-	green = new material(vec4(0, 1, 0, 1));
-	brown = new material(vec4(0.87f, 0.72f, 0.52f, 1));
-
-	tree_Files.push_back("../../../assets/Tree1.csv");
-	tree_Files.push_back("../../../assets/Tree2.csv");
-	  //float pos_X = ((rectScreen))
-
-	  //draw_Log(vec3(4,5,0));
-
-	//  draw_Log(vec3(0,0,0));
-
-    }
-
-	void draw_Log(vec3(pos))
-	{
-		mesh_box *box = new mesh_box(vec3(0.2f, 4, 0));
-		scene_node *node = new scene_node();
-		node->translate(pos);
-		app_scene->add_child(node);
-		app_scene->add_mesh_instance(new mesh_instance(node, box, brown));
-	}
-
-
-
-	void draw_line()
-	{
-		glClearColor(0, 0, 0, 1); //Clears background colour to black
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glBegin(GL_LINES);
-		glColor3f(0.87f, 0.72f, 0.52f);
-		for (int i = 0; i < point_Node.size(); ++i)
-		{
-			glVertex2f(point_Node[i].x(), point_Node[i].y());
-			glVertex2f(point_Node[i].x(), point_Node[i].y());
 		}
 
-		glEnd();
-	}
 
-	void rotate_Function(vec2& vec, float degrees)
-	{
-		float cs = cos(degrees * RADIAN);
-		float sn = sin(degrees * RADIAN);
-		float pX = vec.x() * cs - vec.y() * sn;
-		float pY = vec.x() * sn + vec.y() * cs;
-		vec.x() = pX;
-		vec.y() = pY;
-	}
+		// this is called once OpenGL is initialized
+		void app_init() {
+			start_Pos = vec2(0, -1);
+			current_Pos = start_Pos;
+			current_Angle = 0.0f;
+			app_scene = new visual_scene();
+			app_scene->create_default_camera_and_lights();
+			green = new material(vec4(0, 1, 0, 1));
+			brown = new material(vec4(0.87f, 0.72f, 0.52f, 1));
+			tree_Files.push_back("../../../assets/Tree1.csv");
+			tree_Files.push_back("../../../assets/Tree2.csv");
+			load_Data(tree_Files[0]);
+			printf("%s", iterate_Rules(axiom, rules));
+			parse_Data(iterate_Rules(axiom, rules));
+		}
 
-	void load_Data(string file_Data)
-	{
-		std::ifstream file(file_Data);
-
-		char buffer[256];
-
-		rules.reset();
-		point_State.reset();
-		direction_State.reset();
-
-		int col = 0;
-		while (!file.eof())
+		void draw_line()
 		{
-			file.getline(buffer, sizeof(buffer));
-
-			if (buffer[0] != ',')
+			glClearColor(0, 0, 0, 1); //Clears background colour to black
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glBegin(GL_LINES);
+			glColor3f(0.87f, 0.72f, 0.52f);
+			//glColor3f(1, 0, 0);
+			for (int i = 0; i < point_Node.size(); ++i)
 			{
+				glVertex2f(point_Node[i].x(), point_Node[i].y());
+				glVertex2f(point_Node[i].x(), point_Node[i].y());
+			}
+
+			glEnd();
+		}
+
+		void rotate_Function(vec2& vec, float degrees)
+		{
+			float cs = cos(degrees * RADIAN);
+			float sn = sin(degrees * RADIAN);
+			float pX = vec.x() * cs - vec.y() * sn;
+			float pY = vec.x() * sn + vec.y() * cs;
+			vec.x() = pX;
+			vec.y() = pY;
+		}
+
+		void load_Data(string file_Data) //loads in the data
+		{
+			std::ifstream file(file_Data);
+
+			char buffer[256];
+
+			rules.reset();
+			point_State.reset();
+			direction_State.reset();
+
+			int col = 0;
+			while (!file.eof())
+			{
+				file.getline(buffer, sizeof(buffer));
+
 				if (col == 0)
 				{
-					axiom = buffer;
+					axiom = (buffer);
 				}
 				else if (col == 1)
 				{
@@ -120,17 +104,18 @@ namespace octet {
 				{
 					rules.push_back(buffer);
 				}
-				++col;
-			}
-		}
+				col++;
 
+			}
+		
+	
 
 		for (int j = 0; j < rules.size(); j++) {
 			printf("%s\n", rules[j]);
 		}
 	}
 
-	void parse_Data(string data)
+	void parse_Data(string data) // Reads rules and parses
 	{
 		vec2 end_Pos;
 		current_Angle = 0.0f;
@@ -139,7 +124,7 @@ namespace octet {
 
 		start_Pos = vec2(0.0f, -1.0f);
 		current_Pos = start_Pos;
-		point_Node.reset();
+		//point_Node.reset();
 
 		for (int j = 0; j < data.size(); j++) {
 			switch (data[j])
@@ -177,7 +162,36 @@ namespace octet {
 				rotate_Function(current_Dir, angle);
 				break;
 			}
+			center_points(point_Node);
+			
 		}
+	}
+
+	string iterate_Rules(string axiom,dynarray<string> &rules) //goes through rules and iterates
+	{
+		dynarray<char> data;
+		for (int i = 0; i < axiom.size(); i++)
+		{
+			int j = 0;
+			for (j = 0; j < rules.size(); j++)
+			{
+				printf("Iterated!");
+				if (axiom[i] == rules[j][0])
+				{
+					for (int k = 0; k < rules[j].size(); k++)
+					{
+						data.push_back(rules[j][2]);//return the 3rd line
+					} 
+					break;
+				}
+			}
+			if (j == rules.size())
+			{
+				printf("none");
+			}
+		}
+		data.push_back(0x00);
+		return string(data.data());
 	}
 
 	void hotkey_Controls()
@@ -203,6 +217,69 @@ namespace octet {
 	}
 
 
+	void get_Centerpointandscale(dynarray<vec2>& points, float& scale, vec2& midpoint)
+	{
+		scale = 0.0f;
+		midpoint = vec2(0.0f);
+
+		vec2 top_right = vec2(0.0f);
+		vec2 bottom_left = vec2(0.0f);
+
+		int size = points.size();
+		for (int i = 0; i < size; i++)
+		{
+			top_right.x() = (points[i].x() < top_right.x()) ? top_right.x() : points[i].x();
+			top_right.y() = (points[i].y() < top_right.y()) ? top_right.y() : points[i].y();
+
+			bottom_left.x() = (points[i].x() > bottom_left.x()) ? bottom_left.x() : points[i].x();
+			bottom_left.y() = (points[i].y() > bottom_left.y()) ? bottom_left.y() : points[i].y();
+		}
+
+		scale = (top_right - bottom_left).length();
+
+		printf("top_right %f, %f\n", top_right.x(), top_right.y());
+		printf("bottom_left %f, %f\n", bottom_left.x(), bottom_left.y());
+
+		printf("Scale of points: %f\n", scale);
+
+		midpoint = (top_right + bottom_left) * 0.5f;
+		//return scale;
+	}
+	void center_points(dynarray<vec2>& points)
+	{
+		float scale;
+		vec2 center;
+		get_Centerpointandscale(points, scale, center);
+
+		if (scale != 0.0f)
+			scale = 2.0f / scale;
+		else return;
+
+		for (int i = 0; i < points.size(); i++)
+		{
+			points[i] -= center;
+			points[i] *= scale;
+		}
+	}
+
+	void draw_points()
+	{
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glBegin(GL_LINES);
+		glColor3f(250.0f, 0.0f, 0.0f);
+		int size = point_Node.size();
+		for (int i = 0; i < size; i++)
+		{
+			glVertex3f(point_Node[i].x(), point_Node[i].y(), 0);
+			++i;
+			glVertex3f(point_Node[i].x(), point_Node[i].y(), 0);
+		}
+
+		glEnd();
+	}
+
+	
     // this is called to draw the world
     void draw_world(int x, int y, int w, int h) {
       int vx = 0, vy = 0;
