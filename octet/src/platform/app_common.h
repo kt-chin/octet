@@ -28,12 +28,16 @@ namespace octet {
   };
 
   enum key {
-    // keys with ascii equivalent, eg. space, esc, enter have their ascii code.
-    key_backspace = 8,
-    key_tab = 9,
-    key_esc = 27,
-    key_space = 32,
-
+	  // keys with ascii equivalent, eg. space, esc, enter have their ascii code.
+	  key_backspace = 8,
+	  key_tab = 9,
+	  key_esc = 27,
+	  key_space = 32,
+	  w = 87,
+	  s = 83,
+	  a = 65,
+	  d = 68,
+	  shift = 15,
     // other keys have the following codes:
     key_f1 = 0x80,
     key_f2,
