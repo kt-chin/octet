@@ -25,7 +25,7 @@ namespace octet {
 		int iteration_Count;
 		int tree_Example = 1;
 		int current_Iterate = 0;
-		float camera_Speed = 3.0f;
+		//float camera_Speed = 3.0f;
 
 	public:
 		// this is called when we construct the class before everything is initialised.
