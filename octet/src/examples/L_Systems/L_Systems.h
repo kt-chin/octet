@@ -30,7 +30,6 @@ namespace octet {
 
 		}
 
-
 		// this is called once OpenGL is initialized
 		void app_init() {
 			start_Pos = vec2(0, -1);
@@ -44,7 +43,7 @@ namespace octet {
 			tree_Files.push_back("../../../assets/Tree2.csv");
 			load_Data(tree_Files[0]);
 			printf("%s", iterate_Rules(axiom, rules));
-			parse_Data(iterate_Rules(axiom, rules));
+			
 		}
 
 		void draw_line()
@@ -63,6 +62,15 @@ namespace octet {
 			glEnd();
 		}
 
+		void generate_points(string axiom, dynarray<string>& rules, int num_iterations)
+		{
+
+			for (int j = 0; j < num_iterations; j++) {
+				iterate_Rules(axiom, rules);
+				//result =
+			}
+			parse_Data(iterate_Rules(axiom, rules));
+		}
 		void rotate_Function(vec2& vec, float degrees)
 		{
 			float cs = cos(degrees * RADIAN);
@@ -76,18 +84,14 @@ namespace octet {
 		void load_Data(string file_Data) //loads in the data
 		{
 			std::ifstream file(file_Data);
-
 			char buffer[256];
-
 			rules.reset();
 			point_State.reset();
 			direction_State.reset();
-
 			int col = 0;
 			while (!file.eof())
 			{
 				file.getline(buffer, sizeof(buffer));
-
 				if (col == 0)
 				{
 					axiom = (buffer);
@@ -105,11 +109,8 @@ namespace octet {
 					rules.push_back(buffer);
 				}
 				col++;
-
 			}
 		
-	
-
 		for (int j = 0; j < rules.size(); j++) {
 			printf("%s\n", rules[j]);
 		}
@@ -163,7 +164,6 @@ namespace octet {
 				break;
 			}
 			center_points(point_Node);
-			
 		}
 	}
 
@@ -180,7 +180,7 @@ namespace octet {
 				{
 					for (int k = 0; k < rules[j].size(); k++)
 					{
-						data.push_back(rules[j][2]);//return the 3rd line
+						data.push_back(rules[j][2]);//return the 3rd character (ignoring F=)
 					} 
 					break;
 				}
@@ -215,7 +215,6 @@ namespace octet {
 			iteration_Count--;
 		}
 	}
-
 
 	void get_Centerpointandscale(dynarray<vec2>& points, float& scale, vec2& midpoint)
 	{
@@ -275,11 +274,8 @@ namespace octet {
 			++i;
 			glVertex3f(point_Node[i].x(), point_Node[i].y(), 0);
 		}
-
 		glEnd();
 	}
-
-	
     // this is called to draw the world
     void draw_world(int x, int y, int w, int h) {
       int vx = 0, vy = 0;
@@ -291,7 +287,6 @@ namespace octet {
 
       // draw the scene
       app_scene->render((float)vx / vy);
-
     }
   };
 }
