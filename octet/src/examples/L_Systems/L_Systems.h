@@ -4,7 +4,6 @@
 namespace octet {
 
 	class L_Systems : public app {
-		// scene for drawing box
 
 		ref<material> green;
 		ref<material> brown;
@@ -33,7 +32,6 @@ namespace octet {
 	public:
 		// this is called when we construct the class before everything is initialised.
 		L_Systems(int argc, char **argv) : app(argc, argv) {
-
 		}
 
 		// this is called once OpenGL is initialized
@@ -56,8 +54,6 @@ namespace octet {
 			printf("%s", iterate_Rules(axiom, rules));
 			app_scene->get_camera_instance(0)->get_node()->translate(vec3(0.0f, 0.0f, 1.0f));
 		}
-
-
 
 		void generate_points(string axiom, dynarray<string>& rules, int iteration_Count)
 		{
@@ -126,7 +122,6 @@ namespace octet {
 
 		start_Pos = vec2(0.0f, -1.0f);
 		current_Pos = start_Pos;
-
 
 		for (int j = 0; j < data.size(); j++) {
 			switch (data[j])
@@ -215,13 +210,11 @@ namespace octet {
 			{
 				printf("GO UP");
 				cameraToWorld.translate(vec3(0, 1, 0)*camera_Speed);
-
 			}
 			if (is_key_down(a))
 			{
 				printf("GO LEFT");
 				cameraToWorld.translate(vec3(1, 0, 0)*-camera_Speed);
-
 			}
 			if (is_key_down(s))
 			{
@@ -282,8 +275,6 @@ namespace octet {
 			{
 				branch_Width += 0.5f;
 			}
-			//generate_points(axiom, rules, current_Iterate);
-			//axiom = iterate_Rules(axiom, rules);
 		}
 		if (is_key_going_down(q))
 		{
@@ -291,8 +282,6 @@ namespace octet {
 			{
 				branch_Width -= 0.5f;
 			}
-			//generate_points(axiom, rules, current_Iterate);
-			//axiom = iterate_Rules(axiom, rules);
 		}
 	}
 
@@ -356,11 +345,6 @@ namespace octet {
 			// clear the background to black
 			glClearColor(0, 0, 0, 1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-			// don't allow Z buffer depth testing (closer objects are always drawn in front of far ones)
-			//glDisable(GL_DEPTH_TEST);
-
-			// allow alpha blend (transparency when alpha channel is 0)
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			draw_line();
