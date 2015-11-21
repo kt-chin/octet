@@ -50,6 +50,7 @@ namespace octet {
 			tree_Files.push_back("../../../assets/Tree5.csv");
 			tree_Files.push_back("../../../assets/Tree6.csv");
 			tree_Files.push_back("../../../assets/Tree7.csv");
+			tree_Files.push_back("../../../assets/Tree8.csv");
 			load_Data(tree_Files[0]);
 			printf("%s", iterate_Rules(axiom, rules));
 			app_scene->get_camera_instance(0)->get_node()->translate(vec3(0.0f, 0.0f, 1.0f));
@@ -282,6 +283,16 @@ namespace octet {
 			{
 				branch_Width -= 0.5f;
 			}
+		}
+		if (is_key_going_down(z))
+		{
+			angle -= 1;
+			generate_points(axiom, rules, current_Iterate);
+		}
+		if (is_key_going_down(c))
+		{
+			angle += 1;
+			generate_points(axiom, rules, current_Iterate);
 		}
 	}
 

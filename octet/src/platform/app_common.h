@@ -39,6 +39,8 @@ namespace octet {
 	  d = 68,
 	  e = 69,
 	  q = 81,
+	  z = 90,
+	  c = 67,
     // other keys have the following codes:
     key_f1 = 0x80,
     key_f2,
