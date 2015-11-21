@@ -9,7 +9,8 @@ namespace octet {
 		ref<material> green;
 		ref<material> brown;
 		ref<visual_scene> app_scene;
-		float branch_Length = 0.01f;
+		float branch_Length = 0.1f;
+		float branch_Width = 0.5f;
 		float angle;
 		vec2 start_Pos;
 		vec2 current_Pos;
@@ -25,7 +26,9 @@ namespace octet {
 		int iteration_Count;
 		int tree_Example = 1;
 		int current_Iterate = 0;
-		//float camera_Speed = 3.0f;
+		float camera_Speed = 3.0f;
+		mat4t cameraToWorld;
+		mat4t transform;
 
 	public:
 		// this is called when we construct the class before everything is initialised.
@@ -48,9 +51,12 @@ namespace octet {
 			tree_Files.push_back("../../../assets/Tree4.csv");
 			tree_Files.push_back("../../../assets/Tree5.csv");
 			tree_Files.push_back("../../../assets/Tree6.csv");
+			tree_Files.push_back("../../../assets/Tree7.csv");
 			load_Data(tree_Files[0]);
 			printf("%s", iterate_Rules(axiom, rules));
+			app_scene->get_camera_instance(0)->get_node()->translate(vec3(0.0f, 0.0f, 1.0f));
 		}
+
 
 
 		void generate_points(string axiom, dynarray<string>& rules, int iteration_Count)
@@ -58,7 +64,6 @@ namespace octet {
 			point_State.reset();
 			direction_State.reset();
 			point_Node.reset();
-			//rules.reset();
 			string result = axiom;
 			for (int j = 0; j < iteration_Count; j++) {
 				result = iterate_Rules(axiom, rules);
@@ -202,60 +207,37 @@ namespace octet {
 
 	void hotkey_Controls()
 	{
-		
-			if (is_key_down(key_up))
+		mat4t worldToCamera;
+		cameraToWorld.invertQuick(worldToCamera);
+		if (is_key_down(key_shift))
+		{
+			if (is_key_down(w))
 			{
 				printf("GO UP");
+				cameraToWorld.translate(vec3(0, 1, 0)*camera_Speed);
 
 			}
-			if (is_key_down(key_left))
+			if (is_key_down(a))
 			{
 				printf("GO LEFT");
+				cameraToWorld.translate(vec3(1, 0, 0)*-camera_Speed);
 
 			}
-			if (is_key_down(key_down))
+			if (is_key_down(s))
 			{
 				printf("GO DOWN");
+				cameraToWorld.translate(vec3(0, 1, 0)*-camera_Speed);
 
 			}
-			if (is_key_down(key_right))
+			if (is_key_down(d))
 			{
 				printf("GO RIGHT");
+				cameraToWorld.translate(vec3(1,0, 0)*camera_Speed);
 
 			}
-		
-		else
-		/*	cameraToWorld.translate(cameraToWorld.y() * camera_Speed);
 		}
-		if (is_key_down(key_shift) && is_key_down(a))
-		{
-			cameraToWorld.translate(cameraToWorld.x() * -camera_Speed);
-		}
-		if (is_key_down(key_shift) && is_key_down(s))
-		{
-			cameraToWorld.translate(cameraToWorld.y() * -camera_Speed);
-		}
-		if (is_key_down(key_shift) && is_key_down(d))
-		{
-			cameraToWorld.translate(cameraToWorld.x() * camera_Speed);
-		}*/
-		/*if (is_key_down(w))
-		{
-			cameraToWorld.translate(cameraToWorld.y() * camera_Speed);
-		}
-		if (is_key_down(a))
-		{
-			cameraToWorld.translate(cameraToWorld.x() * -camera_Speed);
-		}
-		if (is_key_down(s))
-		{
-			cameraToWorld.translate(cameraToWorld.y() * -camera_Speed);
-		}
-		if (is_key_down(d))
-		{
-			cameraToWorld.translate(cameraToWorld.x() * camera_Speed);
-		}*/
 
+		else
 		if (is_key_going_down(d))
 		{
 			printf("%i\n", tree_Example);
@@ -293,8 +275,24 @@ namespace octet {
 		{
 			reset_Function();
 			load_Data(tree_Files[tree_Example]);
-			//axiom = initial_Axiom;
-			//printf("%s\n", axiom);
+		}
+		if (is_key_going_down(e))
+		{
+			if (branch_Width < 5.0f)
+			{
+				branch_Width += 0.5f;
+			}
+			//generate_points(axiom, rules, current_Iterate);
+			//axiom = iterate_Rules(axiom, rules);
+		}
+		if (is_key_going_down(q))
+		{
+			if (branch_Width > 0.0f)
+			{
+				branch_Width -= 0.5f;
+			}
+			//generate_points(axiom, rules, current_Iterate);
+			//axiom = iterate_Rules(axiom, rules);
 		}
 	}
 
@@ -318,13 +316,20 @@ namespace octet {
 
 		scale = (top_right - bottom_left).length();
 
-		/*printf("top_right %f, %f\n", top_right.x(), top_right.y());
-		printf("bottom_left %f, %f\n", bottom_left.x(), bottom_left.y());
-
-		printf("Scale of points: %f\n", scale);*/
-
 		midpoint = (top_right + bottom_left) * 0.5f;
-		//return scale;
+	}
+
+	void render(mat4t &cameraToWorld)
+	{
+		mat4t modelToProjection = mat4t::build_projection_matrix(transform, cameraToWorld);
+
+		glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)point_Node.data());
+		glEnableVertexAttribArray(attribute_pos);
+
+		glVertexAttribPointer(attribute_color, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(point_Node.data() + 3));
+		glEnableVertexAttribArray(attribute_color);
+
+		glLineWidth(branch_Width);
 	}
 
 	void draw_line()
@@ -333,7 +338,6 @@ namespace octet {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glBegin(GL_LINES);
 		glColor3f(0.87f, 0.72f, 0.52f);
-		//glColor3f(1, 0, 0);
 		for (int i = 0; i < point_Node.size(); i++)
 		{
 			glVertex2f(point_Node[i].x(), point_Node[i].y());
@@ -343,16 +347,25 @@ namespace octet {
 
 		glEnd();
 	}
-	
-    // this is called to draw the world
-    void draw_world(int x, int y, int w, int h) {
-		glViewport(x, y, w, h);
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		draw_line();
 
-	  hotkey_Controls();
-      // update matrices. assume 30 fps.
+    // this is called to draw the world
+		void draw_world(int x, int y, int w, int h) {
+
+			glViewport(x, y, w, h);
+
+			// clear the background to black
+			glClearColor(0, 0, 0, 1);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+			// don't allow Z buffer depth testing (closer objects are always drawn in front of far ones)
+			//glDisable(GL_DEPTH_TEST);
+
+			// allow alpha blend (transparency when alpha channel is 0)
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			draw_line();
+			hotkey_Controls();
+			render(cameraToWorld);
 
     }
   };
