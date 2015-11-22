@@ -32,6 +32,7 @@ namespace octet {
 	public:
 		// this is called when we construct the class before everything is initialised.
 		L_Systems(int argc, char **argv) : app(argc, argv) {
+			transform.loadIdentity();
 		}
 
 		// this is called once OpenGL is initialized
@@ -39,8 +40,8 @@ namespace octet {
 			start_Pos = vec2(0, -1);
 			current_Pos = start_Pos;
 			current_Angle = 0.0f;
-			app_scene = new visual_scene();
-			app_scene->create_default_camera_and_lights();
+			/*app_scene = new visual_scene();
+			app_scene->create_default_camera_and_lights();*/
 			green = new material(vec4(0, 1, 0, 1));
 			brown = new material(vec4(0.87f, 0.72f, 0.52f, 1));
 			tree_Files.push_back("../../../assets/Tree1.csv");
@@ -53,7 +54,8 @@ namespace octet {
 			tree_Files.push_back("../../../assets/Tree8.csv");
 			load_Data(tree_Files[0]);
 			printf("%s", iterate_Rules(axiom, rules));
-			app_scene->get_camera_instance(0)->get_node()->translate(vec3(0.0f, 0.0f, 1.0f));
+			cameraToWorld.loadIdentity();
+			cameraToWorld.translate(vec3(0.0f, 1.25f, 2.75f));
 		}
 
 		void generate_points(string axiom, dynarray<string>& rules, int iteration_Count)
@@ -200,38 +202,36 @@ namespace octet {
 		rules.reset();
 		current_Iterate = 0;
 	}
+	void camera_Controls()
+	{
+
+			if (is_key_down(key_up))
+			{
+				printf("%f",cameraToWorld.y());
+				cameraToWorld.translate(cameraToWorld.y()*camera_Speed);
+			}
+			if (is_key_down(key_left))
+			{
+				printf("%f", cameraToWorld.x());
+				cameraToWorld.translate(cameraToWorld.x()*-camera_Speed);
+			}
+			if (is_key_down(key_down))
+			{
+				printf("%f", cameraToWorld.y());
+				cameraToWorld.translate(cameraToWorld.y()*-camera_Speed);
+
+			}
+			if (is_key_down(key_right))
+			{
+				printf("%f", cameraToWorld.x());
+				cameraToWorld.translate(cameraToWorld.x()*camera_Speed);
+
+			}
+		
+	}
 
 	void hotkey_Controls()
 	{
-		mat4t worldToCamera;
-		cameraToWorld.invertQuick(worldToCamera);
-		if (is_key_down(key_shift))
-		{
-			if (is_key_down(w))
-			{
-				printf("GO UP");
-				cameraToWorld.translate(vec3(0, 1, 0)*camera_Speed);
-			}
-			if (is_key_down(a))
-			{
-				printf("GO LEFT");
-				cameraToWorld.translate(vec3(1, 0, 0)*-camera_Speed);
-			}
-			if (is_key_down(s))
-			{
-				printf("GO DOWN");
-				cameraToWorld.translate(vec3(0, 1, 0)*-camera_Speed);
-
-			}
-			if (is_key_down(d))
-			{
-				printf("GO RIGHT");
-				cameraToWorld.translate(vec3(1,0, 0)*camera_Speed);
-
-			}
-		}
-
-		else
 		if (is_key_going_down(d))
 		{
 			printf("%i\n", tree_Example);
@@ -323,12 +323,6 @@ namespace octet {
 	{
 		mat4t modelToProjection = mat4t::build_projection_matrix(transform, cameraToWorld);
 
-		glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)point_Node.data());
-		glEnableVertexAttribArray(attribute_pos);
-
-		glVertexAttribPointer(attribute_color, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(point_Node.data() + 3));
-		glEnableVertexAttribArray(attribute_color);
-
 		glLineWidth(branch_Width);
 	}
 
@@ -351,6 +345,9 @@ namespace octet {
     // this is called to draw the world
 		void draw_world(int x, int y, int w, int h) {
 
+			int vx = 0, vy = 0;
+			get_viewport_size(vx, vy);
+
 			glViewport(x, y, w, h);
 
 			// clear the background to black
@@ -360,8 +357,9 @@ namespace octet {
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			draw_line();
 			hotkey_Controls();
+			camera_Controls();
 			render(cameraToWorld);
-
+			
     }
   };
 }
