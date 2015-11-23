@@ -14,6 +14,8 @@ shift + g		- make tree green
 shift + b		- make tree blue
 shift + y		- make tree yellow
 shift + h		- make tree white
+ ctrl + w		- Zoom camera in
+ ctrl + s		- Zoom camera out
  ctrl + r		- make scene red
  ctrl + g		- make scene green
  ctrl + b		- make scene blue

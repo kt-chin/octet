@@ -1,6 +1,5 @@
 #include <fstream>
 #include "lsystem_Shader.h"
-#define RADIAN 0.01745329251f
 
 namespace octet {
 
@@ -15,14 +14,13 @@ namespace octet {
 
 		lsystem_Shader shader;
 		ref<visual_scene> app_scene;
-		float branch_Length = 5.0f;
+		float branch_Length = 1.0f;
 		float branch_Width = 0.5f;
 		float angle;
 		float scale;
 		vec3 cur_Colour;
 		vec3 max;
 		vec3 min;
-		vec3 start_Campos = vec3(0.0f, 1.25f, 2.75f);
 		vec2 start_Pos;
 		vec2 current_Pos;
 		vec2 current_Dir;
@@ -45,7 +43,6 @@ namespace octet {
 		mat4t transform;
 		bool light_On = false;
 
-
 	public:
 		// this is called when we construct the class before everything is initialised.
 		L_Systems(int argc, char **argv) : app(argc, argv) {
@@ -66,9 +63,8 @@ namespace octet {
 			tree_Files.push_back("../../../assets/Tree7.csv");
 			tree_Files.push_back("../../../assets/Tree8.csv");
 			load_Data(tree_Files[0]);
-			printf("%s", iterate_Rules(axiom, rules));
 			cameraToWorld.loadIdentity();
-			cameraToWorld.translate(start_Campos);
+			cameraToWorld.translate(0.0f, 1.9f, 2.0f);
 			glClearColor(0, 0.6f, 0.6f, 1);
 		}
 
@@ -123,16 +119,15 @@ namespace octet {
 			}
 
 			for (int j = 0; j < rules.size(); j++) {
-				printf("%s\n", rules[j]);
 			}
 			create_Tree();
 			
 		}
 		void light_Tree()
 		{
-			float r = ((double)rand() / (RAND_MAX) / 5.0f + 0.01);
-			float g = ((double)rand() / (RAND_MAX) / 5.0f + 0.01);
-			float b = ((double)rand() / (RAND_MAX) / 5.0f + 0.01);
+			float r = ((double)rand() / (RAND_MAX) / 1.0f + 0.001f);
+			float g = ((double)rand() / (RAND_MAX) / 1.0f + 0.001f);
+			float b = ((double)rand() / (RAND_MAX) / 1.0f + 0.001f);
 
 			cur_Colour = vec3(r, g, b);
 			redraw_Trees();
@@ -188,7 +183,7 @@ namespace octet {
 			
 			if (scale > 0.0001f)
 			{
-				transform.scale(4.1f / scale, 4.1f / scale, 4.1f / scale); //scaled so the tree remains the same size.
+				transform.scale(5.0f / scale, 4.0f / scale, 5.0f / scale); //scaled so the tree remains the same size.
 			}
 		}
 
@@ -205,7 +200,6 @@ namespace octet {
 			current_Node.end = vec3(0, 0, 0);
 			current_Node.colour = cur_Colour;
 			L_Node Node;
-
 			for (int j = 0; j < data.size(); j++) {
 				switch (data[j])
 				{
@@ -275,8 +269,7 @@ namespace octet {
 			{
 				int j = 0;
 				for (j = 0; j < rules.size(); j++)
-				{
-					//printf("Iterated!");
+				{					
 					if (axiom[i] == rules[j][0])
 					{
 						for (int k = 2; k < rules[j].size(); k++)
@@ -288,7 +281,7 @@ namespace octet {
 				}
 				if (j == rules.size())
 				{
-					//printf("none");
+					printf("%S\n","none");
 					data.push_back(axiom[i]);
 				}
 			}
@@ -319,30 +312,27 @@ namespace octet {
 		{
 			if (is_key_down(key_shift))
 			{
+				//move camera
 				if (is_key_down(w))
 				{
-					printf("%f", cameraToWorld.y());
 					cameraToWorld.translate(cameraToWorld.y()*camera_Speed);
 				}
 				if (is_key_down(a))
 				{
-					printf("%f", cameraToWorld.x());
 					cameraToWorld.translate(cameraToWorld.x()*-camera_Speed);
 				}
 				if (is_key_down(s))
 				{
-					printf("%f", cameraToWorld.y());
 					cameraToWorld.translate(cameraToWorld.y()*-camera_Speed);
 
 				}
 				if (is_key_down(d))
 				{
-					printf("%f", cameraToWorld.x());
 					cameraToWorld.translate(cameraToWorld.x()*camera_Speed);
 				}
 				if (is_key_going_down(red))
 				{
-					printf("%s\n", "Red");
+					//make tree red
 					float r = 1;
 					float g = 0;
 					float b = 0;
@@ -351,7 +341,7 @@ namespace octet {
 				}
 				if (is_key_going_down(green))
 				{
-					printf("%s\n", "g + 1");
+					//make tree green
 					float r = 0;
 					float g = 1;
 					float b = 0;
@@ -361,7 +351,7 @@ namespace octet {
 				if (is_key_going_down(blue))
 				{
 					
-					printf("%s\n", "b + 1");
+					//make tree blue
 					float r = 0;
 					float g = 0;
 					float b = 1;
@@ -370,7 +360,7 @@ namespace octet {
 				}
 				if (is_key_going_down(yellow))
 				{
-					printf("%s\n", "b + 1");
+					//make tree yellow
 					float r = 1;
 					float g = 1;
 					float b = 0;
@@ -379,58 +369,69 @@ namespace octet {
 				}
 				if (is_key_going_down(h))
 				{
-					printf("%s\n", "b + 1");
+					//make tree white
 					float r = 1;
 					float g = 1;
 					float b = 1;
 					cur_Colour = vec3(r, g, b);
 					redraw_Trees();
 				}
+
 			}
 			else if (is_key_down(key_ctrl))
 			{
 				if (is_key_going_down(red))
 				{
-					printf("%s\n", "background red");
+					//red background
 					redraw_Scene();
 					glClearColor(1, 0, 0,1);
 					
 				}
 				if (is_key_going_down(green))
 				{
-					printf("%s\n", "background green");
+					//green background
 					redraw_Scene();
 					glClearColor(0, 1, 0, 1);
 				}
 				if (is_key_going_down(blue))
 				{
-					printf("%s\n", "background blue");
+					//blue background
 					redraw_Scene();
 					glClearColor(0, 0, 1, 1);
 				}
 				if (is_key_going_down(yellow))
 				{
-					printf("%s\n", "background yellow");
+					//yellow background
 					redraw_Scene();
 					glClearColor(1, 1, 0, 1);
 				}
 				if (is_key_going_down(h))
 				{
-					printf("%s\n", "background black");
+					//black background
 					redraw_Scene();
 					glClearColor(0, 0, 0, 1);
 				}
 				if (is_key_going_down(x))
 				{
-					printf("%s\n", "background white");
+					//white background
 					redraw_Scene();
 					glClearColor(1, 1, 1, 1);
 				}
 				if (is_key_going_down(c))
 				{
-					printf("%s\n", "background Reset");
+					//reset background
 					redraw_Scene();
 					glClearColor(0, 0.6f, 0.6f, 1);
+				}
+
+				//zoom camera
+				if (is_key_down(w))
+				{
+					cameraToWorld.translate(cameraToWorld.z()*-camera_Speed);
+				}
+				if (is_key_down(s))
+				{
+					cameraToWorld.translate(cameraToWorld.z()*camera_Speed);
 				}
 			}
 
@@ -442,33 +443,30 @@ namespace octet {
 					{
 						current_Iterate++;
 						create_Tree();
-						printf("Should Iterate upwards\n");
+						//Should Iterate upwards
 						axiom = iterate_Rules(axiom, rules);
-						printf("%s\n", axiom);
 					}
 				}
 				if (is_key_going_down(d))
 				{
-					printf("%i\n", tree_Example);
 					if (tree_Example < tree_Files.size() - 1)
 					{
 						cur_Colour = vec3(0, 0, 0);
 						light_On = false;
 						reset_Function();
-						printf("Should change rules forward");
+						//Should change rules forward
 						tree_Example++;
 						load_Data(tree_Files[tree_Example]);
 					}
 				}
 				if (is_key_going_down(a))
 				{
-					printf("%i\n", tree_Example);
 					if (tree_Example > 0)
 					{
 						cur_Colour = vec3(0, 0, 0);
 						light_On = false;
 						reset_Function();
-						printf("Should change rules backwards");
+						//Should change rules backwards
 						tree_Example--;
 						load_Data(tree_Files[tree_Example]);
 					}
