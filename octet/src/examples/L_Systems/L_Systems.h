@@ -211,7 +211,7 @@ namespace octet {
 					trans_Node.loadIdentity();
 					trans_Node.translate(current_Node.end);
 					trans_Node.invertQuick(invertTransform);
-					vec4 localForward = vec4(0.0f, 0.0f, 1.0f, 0.0f) * invertTransform;
+					vec4 localForward = vec4(0.0, 0.0, 1.0, 0.0f) * invertTransform;
 					trans_Node.rotate(current_Angle, localForward.x(), localForward.y(), localForward.z());
 					Node.transform = trans_Node;
 					float r = red;
@@ -544,11 +544,7 @@ namespace octet {
 			get_viewport_size(vx, vy);
 			glViewport(x, y, w, h);
 			hotkey_Controls();
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glDisable(GL_DEPTH_TEST);
-			// allow alpha blend (transparency when alpha channel is 0)
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			redraw_Scene();
 			if (light_On == true)
 			{
 				light_Tree();

@@ -37,7 +37,7 @@ namespace octet {
 
 				void main()
 				{
-					gl_FragColor = vec4(color_.x, color_.y, color_.z, 1.0f);
+					gl_FragColor = vec4(color_.x, color_.y, color_.z, 1.0);
 				}
 				);
 
