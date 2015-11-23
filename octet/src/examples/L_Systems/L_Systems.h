@@ -22,6 +22,7 @@ namespace octet {
 		vec3 cur_Colour;
 		vec3 max;
 		vec3 min;
+		vec3 start_Campos = vec3(0.0f, 1.25f, 2.75f);
 		vec2 start_Pos;
 		vec2 current_Pos;
 		vec2 current_Dir;
@@ -67,7 +68,7 @@ namespace octet {
 			load_Data(tree_Files[0]);
 			printf("%s", iterate_Rules(axiom, rules));
 			cameraToWorld.loadIdentity();
-			cameraToWorld.translate(vec3(0.0f, 1.25f, 2.75f));
+			cameraToWorld.translate(start_Campos);
 			glClearColor(0, 0.6f, 0.6f, 1);
 		}
 
@@ -104,7 +105,6 @@ namespace octet {
 				file.getline(buffer, sizeof(buffer));
 				if (col == 0)
 				{
-					//axiom = (buffer);
 					initial_Axiom = (buffer);
 				}
 				else if (col == 1)
@@ -149,8 +149,8 @@ namespace octet {
 			vertices.reset();
 			for (int j = 0; j < num_nodes; j++)
 			{
-
-				max.x() = (point_Node[j].transform.row(3).x() > max.x()) ? point_Node[j].transform.row(3).x() : max.x(); // update the current tree. Shader expects z co-ord regardless of 2D/3D
+				// update the current tree. Shader expects z co-ord regardless of 2D/3D
+				max.x() = (point_Node[j].transform.row(3).x() > max.x()) ? point_Node[j].transform.row(3).x() : max.x(); 
 				max.y() = (point_Node[j].transform.row(3).y() > max.y()) ? point_Node[j].transform.row(3).y() : max.y();
 				max.z() = (point_Node[j].transform.row(3).z() > max.z()) ? point_Node[j].transform.row(3).z() : max.z();
 				min.x() = (point_Node[j].transform.row(3).x() < min.x()) ? point_Node[j].transform.row(3).x() : min.x();
