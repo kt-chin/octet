@@ -507,7 +507,6 @@ namespace octet {
 				}
 				if (is_key_going_down(x))
 				{
-					printf("%s\n", "Change colour plx");
 					if (light_On == false)
 					{
 						light_On = true;
