@@ -1,33 +1,49 @@
 #include <fstream>
+#include "lsystem_Shader.h"
 #define RADIAN 0.01745329251f
 
 namespace octet {
 
+	class L_Node
+	{
+	public:
+		mat4t transform;
+		vec3 colour;
+		vec3 end;
+	};
 	class L_Systems : public app {
 
-		ref<material> green;
-		ref<material> brown;
+		lsystem_Shader shader;
 		ref<visual_scene> app_scene;
-		float branch_Length = 0.1f;
+		float branch_Length = 5.0f;
 		float branch_Width = 0.5f;
 		float angle;
+		float scale;
+		vec3 cur_Colour;
+		vec3 max;
+		vec3 min;
 		vec2 start_Pos;
 		vec2 current_Pos;
 		vec2 current_Dir;
-		vec2 current_Angle;
+		float current_Angle;
 		string axiom;
 		string initial_Axiom;
 		dynarray<string> rules;
 		dynarray<string> tree_Files;
-		dynarray<vec2> point_Node;
-		dynarray<vec2> point_State;
+		dynarray<L_Node> point_Node;
+		dynarray<L_Node> point_State;
+		dynarray<float> angle_State;
+		L_Node current_Node;
 		dynarray<vec2> direction_State;
+		dynarray<float> vertices;
 		int iteration_Count;
 		int tree_Example = 1;
 		int current_Iterate = 0;
-		float camera_Speed = 3.0f;
+		float camera_Speed = 0.2f;
 		mat4t cameraToWorld;
 		mat4t transform;
+		bool light_On = false;
+
 
 	public:
 		// this is called when we construct the class before everything is initialised.
@@ -40,10 +56,6 @@ namespace octet {
 			start_Pos = vec2(0, -1);
 			current_Pos = start_Pos;
 			current_Angle = 0.0f;
-			/*app_scene = new visual_scene();
-			app_scene->create_default_camera_and_lights();*/
-			green = new material(vec4(0, 1, 0, 1));
-			brown = new material(vec4(0.87f, 0.72f, 0.52f, 1));
 			tree_Files.push_back("../../../assets/Tree1.csv");
 			tree_Files.push_back("../../../assets/Tree2.csv");
 			tree_Files.push_back("../../../assets/Tree3.csv");
@@ -56,32 +68,31 @@ namespace octet {
 			printf("%s", iterate_Rules(axiom, rules));
 			cameraToWorld.loadIdentity();
 			cameraToWorld.translate(vec3(0.0f, 1.25f, 2.75f));
+			glClearColor(0, 0.6f, 0.6f, 1);
 		}
 
-		void generate_points(string axiom, dynarray<string>& rules, int iteration_Count)
+		void create_Tree()
 		{
-			point_State.reset();
-			direction_State.reset();
-			point_Node.reset();
-			string result = axiom;
-			for (int j = 0; j < iteration_Count; j++) {
-				result = iterate_Rules(axiom, rules);
+			// Reset the axiom to the initial value
+			axiom = initial_Axiom;
+
+			// Depending on the number of iterations, run the rule engine recursively on the axiom
+			for (int j = 0; j < current_Iterate; j++)
+			{
+				axiom = iterate_Rules(axiom, rules);
 			}
-			parse_Data(result);
-		}
 
-		void rotate_Function(vec2& vec, float degrees)
-		{
-			float cs = cos(degrees * RADIAN);
-			float sn = sin(degrees * RADIAN);	
-			float pX = vec.x() * cs - vec.y() * sn;
-			float pY = vec.x() * sn + vec.y() * cs;
-			vec.x() = pX;
-			vec.y() = pY;
+			// Generate all the required data (nodes) using the turtle algorithm
+			parse_Data(axiom);
+
+			// Using the previously generated data nodes, generate our geometry (vertices)
+			Create_Vertices();
 		}
 
 		void load_Data(string file_Data) //loads in the data
 		{
+			current_Node.transform = transform;
+			shader.init();
 			std::ifstream file(file_Data);
 			char buffer[256];
 			rules.reset();
@@ -93,7 +104,7 @@ namespace octet {
 				file.getline(buffer, sizeof(buffer));
 				if (col == 0)
 				{
-					axiom = (buffer);
+					//axiom = (buffer);
 					initial_Axiom = (buffer);
 				}
 				else if (col == 1)
@@ -110,256 +121,443 @@ namespace octet {
 				}
 				col++;
 			}
-		
-		for (int j = 0; j < rules.size(); j++) {
-			printf("%s\n", rules[j]);
-		}
-	}
 
-	void parse_Data(string data) // Reads rules and parses
-	{
-		vec2 end_Pos;
-		current_Angle = 0.0f;
-
-		current_Dir = vec2(0.0f, 1.0f);
-
-		start_Pos = vec2(0.0f, -1.0f);
-		current_Pos = start_Pos;
-
-		for (int j = 0; j < data.size(); j++) {
-			switch (data[j])
-			{
-			case 'F':
-				//Create line segment
-				current_Dir = current_Dir.normalize();
-				end_Pos = current_Pos + current_Dir * branch_Length;
-				point_Node.push_back(current_Pos);
-				point_Node.push_back(end_Pos);
-				current_Pos = end_Pos;
-				break;
-
-			case '[':
-				// Push (stack) the position and angle
-				direction_State.push_back(current_Dir);
-				point_State.push_back(current_Pos);
-				break;
-
-			case ']':
-				// Pop (Pull) the position and angle
-				current_Dir = direction_State.back();
-				current_Pos = point_State.back();
-				point_State.pop_back();
-				direction_State.pop_back();
-				break;
-
-			case '+':
-				// rotate right
-				rotate_Function(current_Dir, -angle);
-				break;
-
-			case '-':
-				// rotate left 
-				rotate_Function(current_Dir, angle);
-				break;
+			for (int j = 0; j < rules.size(); j++) {
+				printf("%s\n", rules[j]);
 			}
+			create_Tree();
 			
 		}
-	}
-
-	string iterate_Rules(string axiom,dynarray<string> &rules) //goes through rules and iterates
-	{
-		dynarray<char> data;
-		for (int i = 0; i < axiom.size(); i++)
+		void light_Tree()
 		{
-			int j = 0;
-			for (j = 0; j < rules.size(); j++)
+			float r = ((double)rand() / (RAND_MAX) / 5.0f + 0.01);
+			float g = ((double)rand() / (RAND_MAX) / 5.0f + 0.01);
+			float b = ((double)rand() / (RAND_MAX) / 5.0f + 0.01);
+
+			cur_Colour = vec3(r, g, b);
+			redraw_Trees();
+		}
+
+		void Create_Vertices()
+		{
+			transform.loadIdentity();
+			scale = 5.0f;
+			max = vec3(0);
+			min = vec3(0);
+
+			int num_nodes = point_Node.size();
+			vertices.reset();
+			for (int j = 0; j < num_nodes; j++)
 			{
-				//printf("Iterated!");
-				if (axiom[i] == rules[j][0])
+
+				max.x() = (point_Node[j].transform.row(3).x() > max.x()) ? point_Node[j].transform.row(3).x() : max.x(); // update the current tree. Shader expects z co-ord regardless of 2D/3D
+				max.y() = (point_Node[j].transform.row(3).y() > max.y()) ? point_Node[j].transform.row(3).y() : max.y();
+				max.z() = (point_Node[j].transform.row(3).z() > max.z()) ? point_Node[j].transform.row(3).z() : max.z();
+				min.x() = (point_Node[j].transform.row(3).x() < min.x()) ? point_Node[j].transform.row(3).x() : min.x();
+				min.y() = (point_Node[j].transform.row(3).y() < min.y()) ? point_Node[j].transform.row(3).y() : min.y();
+				min.z() = (point_Node[j].transform.row(3).z() > min.z()) ? point_Node[j].transform.row(3).z() : min.z();
+
+				max.x() = (point_Node[j].end.x() > max.x()) ? point_Node[j].end.x() : max.x();
+				max.y() = (point_Node[j].end.y() > max.y()) ? point_Node[j].end.y() : max.y();
+				max.z() = (point_Node[j].end.z() > max.z()) ? point_Node[j].end.z() : max.z();
+				min.x() = (point_Node[j].end.x() < min.x()) ? point_Node[j].end.x() : min.x();
+				min.y() = (point_Node[j].end.y() < min.y()) ? point_Node[j].end.y() : min.y();
+				max.z() = (point_Node[j].end.z() < min.z()) ? point_Node[j].end.z() : min.z();
+
+				//Push back initial vertex co-ords
+				vertices.push_back(point_Node[j].transform.row(3).x());
+				vertices.push_back(point_Node[j].transform.row(3).y());
+				vertices.push_back(point_Node[j].transform.row(3).z());
+
+				// Push initial vertex colour
+				vertices.push_back(point_Node[j].colour.x());
+				vertices.push_back(point_Node[j].colour.y());
+				vertices.push_back(point_Node[j].colour.z());
+
+				// Push back final vertex co-ords
+				vertices.push_back(point_Node[j].end.x());
+				vertices.push_back(point_Node[j].end.y());
+				vertices.push_back(point_Node[j].end.z());
+
+				// Push final vertex colour
+				vertices.push_back(point_Node[j].colour.x());
+				vertices.push_back(point_Node[j].colour.y());
+				vertices.push_back(point_Node[j].colour.z());
+			}
+			scale = (max - min).length();
+			
+			if (scale > 0.0001f)
+			{
+				transform.scale(4.1f / scale, 4.1f / scale, 4.1f / scale); //scaled so the tree remains the same size.
+			}
+		}
+
+		void parse_Data(string data) // Reads rules and parses
+		{
+			vec3 end_pos;
+
+			// Reset (clear) everything
+			point_Node.reset();
+			angle_State.reset();
+			current_Angle = 0.0f;
+
+			current_Node.transform = transform;
+			current_Node.end = vec3(0, 0, 0);
+			current_Node.colour = cur_Colour;
+			L_Node Node;
+
+			for (int j = 0; j < data.size(); j++) {
+				switch (data[j])
 				{
-					for (int k = 2; k < rules[j].size(); k++)
+				case 'F':
 					{
-						data.push_back(rules[j][k]);//return the 3rd character (ignoring F=)
-					} 
+					//Create line segment
+					mat4t invertTransform;
+					mat4t trans_Node = current_Node.transform;
+					trans_Node.loadIdentity();
+					trans_Node.translate(current_Node.end);
+					trans_Node.invertQuick(invertTransform);
+					vec4 localForward = vec4(0.0f, 0.0f, 1.0f, 0.0f) * invertTransform;
+					trans_Node.rotate(current_Angle, localForward.x(), localForward.y(), localForward.z());
+					Node.transform = trans_Node;
+					float r = red;
+					float g = green;
+					float b = blue;
+					Node.colour = current_Node.colour;
+					trans_Node.invertQuick(invertTransform);
+					vec4 local_Up = vec4(0, 1, 0, 0) * invertTransform;
+					Node.end = (trans_Node.row(3).xyz() + (local_Up * branch_Length));
+					point_Node.push_back(Node);
+					current_Node = Node;
+					}
 					break;
+
+				case '[':
+					{
+					// Push (stack) the position and angle
+					point_State.push_back(current_Node);
+					angle_State.push_back(current_Angle);
+					}
+					break;
+
+				case ']':
+					// Pop (Pull) the position and angle
+					{
+					current_Node = point_State.back();
+					point_State.pop_back();
+					current_Angle = angle_State.back();
+					angle_State.pop_back();
+					}
+					break;
+
+				case '+':
+					{
+					// rotate right
+					current_Angle += angle;
+					}
+					break;
+
+				case '-':
+					{
+					// rotate left 
+					current_Angle -= angle;
+					break;
+					}
+				}
+
+			}
+		}
+
+		string iterate_Rules(string axiom, dynarray<string> &rules) //goes through rules and iterates
+		{
+			dynarray<char> data;
+			for (int i = 0; i < axiom.size(); i++)
+			{
+				int j = 0;
+				for (j = 0; j < rules.size(); j++)
+				{
+					//printf("Iterated!");
+					if (axiom[i] == rules[j][0])
+					{
+						for (int k = 2; k < rules[j].size(); k++)
+						{
+							data.push_back(rules[j][k]);//return the 3rd character (ignoring F=)
+						}
+						break;
+					}
+				}
+				if (j == rules.size())
+				{
+					//printf("none");
+					data.push_back(axiom[i]);
 				}
 			}
-			if (j == rules.size())
+			data.push_back(0x00);
+			return string(data.data());
+		}
+
+		void reset_Function()
+		{
+			point_State.reset();
+			direction_State.reset();
+			point_Node.reset();
+			rules.reset();
+			current_Iterate = 0;
+		}
+
+		void redraw_Scene()
+		{
+			int vx = 0, vy = 0;
+			get_viewport_size(vx, vy);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glDisable(GL_DEPTH_TEST);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+
+		void hotkey_Controls()
+		{
+			if (is_key_down(key_shift))
 			{
-				//printf("none");
-				data.push_back(axiom[i]);
+				if (is_key_down(w))
+				{
+					printf("%f", cameraToWorld.y());
+					cameraToWorld.translate(cameraToWorld.y()*camera_Speed);
+				}
+				if (is_key_down(a))
+				{
+					printf("%f", cameraToWorld.x());
+					cameraToWorld.translate(cameraToWorld.x()*-camera_Speed);
+				}
+				if (is_key_down(s))
+				{
+					printf("%f", cameraToWorld.y());
+					cameraToWorld.translate(cameraToWorld.y()*-camera_Speed);
+
+				}
+				if (is_key_down(d))
+				{
+					printf("%f", cameraToWorld.x());
+					cameraToWorld.translate(cameraToWorld.x()*camera_Speed);
+				}
+				if (is_key_going_down(red))
+				{
+					printf("%s\n", "Red");
+					float r = 1;
+					float g = 0;
+					float b = 0;
+					cur_Colour = vec3(r, g, b);
+					redraw_Trees();
+				}
+				if (is_key_going_down(green))
+				{
+					printf("%s\n", "g + 1");
+					float r = 0;
+					float g = 1;
+					float b = 0;
+					cur_Colour = vec3(r, g, b);
+					redraw_Trees();
+				}
+				if (is_key_going_down(blue))
+				{
+					
+					printf("%s\n", "b + 1");
+					float r = 0;
+					float g = 0;
+					float b = 1;
+					cur_Colour = vec3(r, g, b);
+					redraw_Trees();
+				}
+				if (is_key_going_down(yellow))
+				{
+					printf("%s\n", "b + 1");
+					float r = 1;
+					float g = 1;
+					float b = 0;
+					cur_Colour = vec3(r, g, b);
+					redraw_Trees();
+				}
+				if (is_key_going_down(h))
+				{
+					printf("%s\n", "b + 1");
+					float r = 1;
+					float g = 1;
+					float b = 1;
+					cur_Colour = vec3(r, g, b);
+					redraw_Trees();
+				}
+			}
+			else if (is_key_down(key_ctrl))
+			{
+				if (is_key_going_down(red))
+				{
+					printf("%s\n", "background red");
+					redraw_Scene();
+					glClearColor(1, 0, 0,1);
+					
+				}
+				if (is_key_going_down(green))
+				{
+					printf("%s\n", "background green");
+					redraw_Scene();
+					glClearColor(0, 1, 0, 1);
+				}
+				if (is_key_going_down(blue))
+				{
+					printf("%s\n", "background blue");
+					redraw_Scene();
+					glClearColor(0, 0, 1, 1);
+				}
+				if (is_key_going_down(yellow))
+				{
+					printf("%s\n", "background yellow");
+					redraw_Scene();
+					glClearColor(1, 1, 0, 1);
+				}
+				if (is_key_going_down(h))
+				{
+					printf("%s\n", "background black");
+					redraw_Scene();
+					glClearColor(0, 0, 0, 1);
+				}
+				if (is_key_going_down(x))
+				{
+					printf("%s\n", "background white");
+					redraw_Scene();
+					glClearColor(1, 1, 1, 1);
+				}
+				if (is_key_going_down(c))
+				{
+					printf("%s\n", "background Reset");
+					redraw_Scene();
+					glClearColor(0, 0.6f, 0.6f, 1);
+				}
+			}
+
+			else
+			{
+				if (is_key_going_down(w))
+				{
+					if (current_Iterate <= iteration_Count)
+					{
+						current_Iterate++;
+						create_Tree();
+						printf("Should Iterate upwards\n");
+						axiom = iterate_Rules(axiom, rules);
+						printf("%s\n", axiom);
+					}
+				}
+				if (is_key_going_down(d))
+				{
+					printf("%i\n", tree_Example);
+					if (tree_Example < tree_Files.size() - 1)
+					{
+						cur_Colour = vec3(0, 0, 0);
+						light_On = false;
+						reset_Function();
+						printf("Should change rules forward");
+						tree_Example++;
+						load_Data(tree_Files[tree_Example]);
+					}
+				}
+				if (is_key_going_down(a))
+				{
+					printf("%i\n", tree_Example);
+					if (tree_Example > 0)
+					{
+						cur_Colour = vec3(0, 0, 0);
+						light_On = false;
+						reset_Function();
+						printf("Should change rules backwards");
+						tree_Example--;
+						load_Data(tree_Files[tree_Example]);
+					}
+				}
+				if (is_key_going_down(s))
+				{
+					if (current_Iterate > 0)
+					{
+						current_Iterate--;
+						create_Tree();
+					}
+				}
+				if (is_key_going_down(e))
+				{
+					if (branch_Width < 5.0f)
+					{
+						branch_Width += 0.5f;
+					}
+				}
+				if (is_key_going_down(q))
+				{
+					if (branch_Width > 0.0f)
+					{
+						branch_Width -= 0.5f;
+					}
+				}
+				if (is_key_going_down(z))
+				{
+					angle -= 1;
+					create_Tree();
+				}
+				if (is_key_going_down(c))
+				{
+					angle += 1;
+					create_Tree();
+				}
+				if (is_key_going_down(x))
+				{
+					printf("%s\n", "Change colour plx");
+					if (light_On == false)
+					{
+						light_On = true;
+					}
+					else if (light_On == true)
+					{
+						light_On = false;
+					}
+				}
 			}
 		}
-		data.push_back(0x00);
-		return string(data.data());
-	}
 
-	void reset_Function()
-	{
-		point_State.reset();
-		direction_State.reset();
-		point_Node.reset();
-		rules.reset();
-		current_Iterate = 0;
-	}
-	void camera_Controls()
-	{
 
-			if (is_key_down(key_up))
-			{
-				printf("%f",cameraToWorld.y());
-				cameraToWorld.translate(cameraToWorld.y()*camera_Speed);
-			}
-			if (is_key_down(key_left))
-			{
-				printf("%f", cameraToWorld.x());
-				cameraToWorld.translate(cameraToWorld.x()*-camera_Speed);
-			}
-			if (is_key_down(key_down))
-			{
-				printf("%f", cameraToWorld.y());
-				cameraToWorld.translate(cameraToWorld.y()*-camera_Speed);
+		void render(mat4t &cameraToWorld)
+		{
+			mat4t modelToProjection = mat4t::build_projection_matrix(transform, cameraToWorld);
+			shader.render(modelToProjection, 0);
 
-			}
-			if (is_key_down(key_right))
-			{
-				printf("%f", cameraToWorld.x());
-				cameraToWorld.translate(cameraToWorld.x()*camera_Speed);
+			glVertexAttribPointer(attribute_pos, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)vertices.data());
+			glEnableVertexAttribArray(attribute_pos);
 
-			}
-		
-	}
-
-	void hotkey_Controls()
-	{
-		if (is_key_going_down(d))
-		{
-			printf("%i\n", tree_Example);
-			if (tree_Example < tree_Files.size()-1)
-			{
-				reset_Function();
-				printf("Should change rules forward");
-				tree_Example++;
-				load_Data(tree_Files[tree_Example]);
-			}
-		}
-		if (is_key_going_down(w))
-		{
-			if (current_Iterate <= iteration_Count)
-			{
-				current_Iterate++;
-				generate_points(axiom, rules, current_Iterate);
-				printf("Should Iterate upwards\n");
-				axiom = iterate_Rules(axiom, rules);
-				printf("%s\n", axiom);
-			}
-		}
-		if (is_key_going_down(a))
-		{
-			printf("%i\n",tree_Example);
-			if (tree_Example > 0)
-			{
-				reset_Function();
-				printf("Should change rules backwards");
-				tree_Example--;
-				load_Data(tree_Files[tree_Example]);
-			}
-		}
-		if (is_key_going_down(s))
-		{
-			reset_Function();
-			load_Data(tree_Files[tree_Example]);
-		}
-		if (is_key_going_down(e))
-		{
-			if (branch_Width < 5.0f)
-			{
-				branch_Width += 0.5f;
-			}
-		}
-		if (is_key_going_down(q))
-		{
-			if (branch_Width > 0.0f)
-			{
-				branch_Width -= 0.5f;
-			}
-		}
-		if (is_key_going_down(z))
-		{
-			angle -= 1;
-			generate_points(axiom, rules, current_Iterate);
-		}
-		if (is_key_going_down(c))
-		{
-			angle += 1;
-			generate_points(axiom, rules, current_Iterate);
-		}
-	}
-
-	void get_Centerpointandscale(dynarray<vec2>& point_Node, float& scale, vec2& midpoint)
-	{
-		scale = 0.0f;
-		midpoint = vec2(0.0f);
-
-		vec2 top_right = vec2(0.0f);
-		vec2 bottom_left = vec2(0.0f);
-
-		int size = point_Node.size();
-		for (int i = 0; i < size; i++)
-		{
-			top_right.x() = (point_Node[i].x() < top_right.x()) ? top_right.x() : point_Node[i].x();
-			top_right.y() = (point_Node[i].y() < top_right.y()) ? top_right.y() : point_Node[i].y();
-
-			bottom_left.x() = (point_Node[i].x() > bottom_left.x()) ? bottom_left.x() : point_Node[i].x();
-			bottom_left.y() = (point_Node[i].y() > bottom_left.y()) ? bottom_left.y() : point_Node[i].y();
+			glVertexAttribPointer(attribute_color, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(vertices.data() + 3));
+			glEnableVertexAttribArray(attribute_color);
+			glLineWidth(branch_Width);
+			glDrawArrays(GL_LINES, 0, point_Node.size() << 1);
 		}
 
-		scale = (top_right - bottom_left).length();
-
-		midpoint = (top_right + bottom_left) * 0.5f;
-	}
-
-	void render(mat4t &cameraToWorld)
-	{
-		mat4t modelToProjection = mat4t::build_projection_matrix(transform, cameraToWorld);
-
-		glLineWidth(branch_Width);
-	}
-
-	void draw_line()
-	{
-		glClearColor(0, 0, 0, 1); //Clears background colour to black
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glBegin(GL_LINES);
-		glColor3f(0.87f, 0.72f, 0.52f);
-		for (int i = 0; i < point_Node.size(); i++)
+		void redraw_Trees()
 		{
-			glVertex2f(point_Node[i].x(), point_Node[i].y());
-			++i;
-			glVertex2f(point_Node[i].x(), point_Node[i].y());
+			create_Tree();
 		}
 
-		glEnd();
-	}
-
-    // this is called to draw the world
+		// this is called to draw the world
 		void draw_world(int x, int y, int w, int h) {
 
 			int vx = 0, vy = 0;
 			get_viewport_size(vx, vy);
-
 			glViewport(x, y, w, h);
-
-			// clear the background to black
-			glClearColor(0, 0, 0, 1);
+			hotkey_Controls();
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			glDisable(GL_DEPTH_TEST);
+			// allow alpha blend (transparency when alpha channel is 0)
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			draw_line();
-			hotkey_Controls();
-			camera_Controls();
+			if (light_On == true)
+			{
+				light_Tree();
+			}
 			render(cameraToWorld);
-			
-    }
-  };
+
+		}
+	};
 }

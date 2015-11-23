@@ -428,6 +428,7 @@
       <Filter>containers</Filter>
     </ClInclude>
     <ClInclude Include="L_Systems.h" />
+    <ClInclude Include="lsystem_Shader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\resources\mesh_builder.inl">
